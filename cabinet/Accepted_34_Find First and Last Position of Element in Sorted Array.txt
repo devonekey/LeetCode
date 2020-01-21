@@ -1,0 +1,54 @@
+class Solution {
+    private static int start = Integer.MAX_VALUE;
+    private static int end = Integer.MIN_VALUE;
+    private static int[] mNums;
+    private static int mTarget;
+
+    public static void main(String args[]) {
+        int[] range = new Solution().searchRange(new int[]{5, 7, 7, 8, 8, 10}, 8);
+
+        System.out.println("[" + range[0] + ", " + range[1] + "]");
+    }
+
+    public int[] searchRange(int[] nums, int target) {
+        mNums = nums;
+        mTarget = target;
+
+        if (nums == null ||
+                nums.length == 0) {
+            return new int[]{-1, -1};
+        }
+
+        searchRange(0, nums.length);
+
+        return new int[]{start == Integer.MAX_VALUE ? -1 : start,
+                end == Integer.MIN_VALUE ? -1 : end};
+    }
+
+    void searchRange(int startInclusive, int endExclusive) {
+        int pivotIndex = startInclusive + (endExclusive - startInclusive) / 2;
+        int pivotValue = mNums[pivotIndex];
+
+        if (mTarget < pivotValue) {
+            if (pivotIndex > startInclusive) {
+                searchRange(startInclusive, pivotIndex);
+            }
+        } else if (pivotValue == mTarget) {
+            if (pivotIndex > startInclusive) {
+                searchRange(startInclusive, pivotIndex);
+            }
+
+            start = pivotIndex < start ? pivotIndex : start;
+
+            if (pivotIndex + 1 < endExclusive) {
+                searchRange(pivotIndex, endExclusive);
+            }
+
+            end = pivotIndex > end ? pivotIndex : end;
+        } else {
+            if (pivotIndex + 1 < endExclusive) {
+                searchRange(pivotIndex, endExclusive);
+            }
+        }
+    }
+}

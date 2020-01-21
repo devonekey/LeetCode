@@ -1,0 +1,32 @@
+public class Solution {
+    public static void main(String[] args) {
+        new Solution().sortColors(new int[]{2, 0, 2, 1, 1, 0});
+    }
+
+    public void sortColors(int[] nums) {
+        int cache;
+
+        for (int i = 0, red = 0, blue = nums.length - 1; i <= blue;) {
+            switch (nums[i]) {
+                case 0:
+                    cache = nums[i];
+                    nums[i] = nums[red];
+                    nums[red] = cache;
+
+                    red++;
+                    i++;
+                    break;
+                case 1:
+                    i++;
+                    break;
+                case 2:
+                    cache = nums[i];
+                    nums[i] = nums[blue];
+                    nums[blue] = cache;
+
+                    blue--;
+                    break;
+            }
+        }
+    }
+}

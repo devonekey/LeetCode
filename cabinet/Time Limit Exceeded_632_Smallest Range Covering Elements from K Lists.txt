@@ -1,0 +1,98 @@
+import java.util.Arrays;
+import java.util.List;
+
+public class Solution {
+    public static void main(String[] args) {
+        int[] range = new Solution().smallestRange(Arrays.asList(Arrays.asList(4, 10, 15, 24, 26),
+                Arrays.asList(0, 9, 12, 20), Arrays.asList(5, 18, 22, 30)));
+
+        System.out.println("smallest range : " + range[0] + ", " + range[1]);
+    }
+
+    public int[] smallestRange(List<List<Integer>> nums) {
+        RangeTemplate rangeTemplate = new RangeTemplate(nums);
+        int gap = Integer.MAX_VALUE;
+        int[] smallestRange = new int[2];
+
+        while (rangeTemplate.hasNext()) {
+            rangeTemplate.next();
+
+            int[] range = rangeTemplate.getRange();
+
+            if (range[1] - range[0] < gap) {
+                gap = range[1] - range[0];
+                smallestRange[0] = range[0];
+                smallestRange[1] = range[1];
+            }
+        }
+
+        return smallestRange;
+    }
+
+    class RangeTemplate {
+        List<List<Integer>> target;
+        int[] keys;
+
+        RangeTemplate(List<List<Integer>> target) {
+            this.target = target;
+            keys = new int[target.size()];
+
+            for (int i = 0; i < keys.length; i++) {
+                keys[i] = -1;
+            }
+        }
+
+        int[] getRange() {
+            int min = Integer.MAX_VALUE;
+            int max = Integer.MIN_VALUE;
+
+            for (int i = 0; i < target.size(); i++) {
+                int value = target.get(i).get(keys[i]);
+
+                min = Math.min(value, min);
+                max = Math.max(value, max);
+            }
+
+            return new int[]{min, max};
+        }
+
+        boolean hasNext() {
+            for (int i = 0; i < target.size(); i++) {
+                if (keys[i] + 1 < target.get(i).size()) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        void next() {
+            int min = Integer.MAX_VALUE;
+            int max = Integer.MAX_VALUE;
+            int minIndex = -1;
+            boolean init = false;
+
+            for (int i = 0; i < target.size(); i++) {
+                if (keys[i] == -1) {
+                    keys[i] = 0;
+                    init = true;
+                }
+
+                if (target.get(i).get(keys[i]) <= min
+                        && keys[i] + 1 < target.get(i).size()) {
+                    min = target.get(i).get(keys[i]);
+
+                    if (target.get(i).get(keys[i] + 1) < max) {
+                        max = target.get(i).get(keys[i] + 1);
+
+                        minIndex = i;
+                    }
+                }
+            }
+
+            if (minIndex != -1 && !init) {
+                keys[minIndex]++;
+            }
+        }
+    }
+}

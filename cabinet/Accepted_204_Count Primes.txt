@@ -1,0 +1,33 @@
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println("41537 ? " + new Solution().countPrimes(499979));
+    }
+
+    public int countPrimes(int n) {
+        boolean[] primeArr = new boolean[n];
+
+        for (int i = 2; i < n; i++) {
+            primeArr[i] = true;
+        }
+
+        for (int i = 2; i * i < n; i++) {
+            if (!primeArr[i]) {
+                continue;
+            }
+
+            for (int j = 2; i * j < n; j++) {
+                primeArr[i * j] = false;
+            }
+        }
+
+        int result = 0;
+
+        for (boolean isPrime : primeArr) {
+            if (isPrime) {
+                result++;
+            }
+        }
+
+        return result;
+    }
+}

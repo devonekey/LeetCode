@@ -1,0 +1,35 @@
+import java.util.*;
+
+public class Solution {
+    public static void main(String[] args) {
+//        System.out.println(new Solution().subarraysWithKDistinct(new int[]{1, 2, 1, 2, 3}, 2));
+        System.out.println(new Solution().subarraysWithKDistinct(new int[]{1, 2, 1, 3, 4}, 3));
+    }
+
+    public int subarraysWithKDistinct(int[] A, int K) {
+        Set<Integer> set;
+        int count = 0;
+
+        for (int i = 0; i + K <= A.length; i++) {
+            set = new HashSet<>();
+
+            int j = i;
+
+            for (; j < A.length && set.size() < K; j++) {
+                set.add(A[j]);
+            }
+
+            if (set.size() < K) {
+                break;
+            }
+
+            count++;
+
+            for (; j < A.length && set.contains(A[j]); j++) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+}

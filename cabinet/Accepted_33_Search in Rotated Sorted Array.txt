@@ -1,0 +1,65 @@
+class Solution {
+    private static int[] mNums;
+    private static int mTarget;
+
+    public static void main(String args[]) {
+        int output = new Solution().search(new int[]{4, 5, 6, 7, 0, 1, 2}, 0);
+
+        System.out.println(output);
+    }
+
+    public int search(int[] nums, int target) {
+        mNums = nums;
+        mTarget = target;
+
+        if (nums == null ||
+                nums.length == 0) {
+            return -1;
+        }
+
+        return search(0, nums.length);
+    }
+
+    int search(int startInclusive, int endExclusive) {
+        int centerIndex = startInclusive + (endExclusive - startInclusive) / 2;
+        int startValue = mNums[startInclusive];
+        int centerValue = mNums[centerIndex];
+        int endValue = mNums[endExclusive - 1];
+
+        if (mTarget == startValue) {
+            return startInclusive;
+        } else if (mTarget == centerValue) {
+            return centerIndex;
+        } else if (mTarget == endValue) {
+            return endExclusive - 1;
+        }
+
+        if (endExclusive - startInclusive <= 3) {
+            return -1;
+        }
+
+        if (centerValue < startValue) {
+            // pivot is in left side
+            if (mTarget < centerValue
+                    || mTarget > startValue) {
+                // TODO : find target in left side
+                return search(startInclusive + 1, centerIndex);
+            } else {
+                // TODO : find target in right side
+                return search(centerIndex + 1, endExclusive - 1);
+            }
+        } else if (centerValue > startValue) {
+            // pivot is in right side
+            if (mTarget < centerValue
+                    && mTarget > startValue) {
+                // TODO : find target in left side
+                return search(startInclusive + 1, centerIndex);
+            } else {
+                // TODO : find target in right side
+                return search(centerIndex + 1, endExclusive - 1);
+            }
+        }
+
+        return -1;
+    }
+}

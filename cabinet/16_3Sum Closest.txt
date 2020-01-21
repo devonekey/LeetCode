@@ -1,0 +1,10 @@
+public class Solution {
+    public static void main(String[] args) {
+        new Solution().threeSumClosest(new int[]{-1, 2, 1, -4}, 1);
+    }
+
+    public int threeSumClosest(int[] nums, int target) {
+
+        return -1;
+    }
+}

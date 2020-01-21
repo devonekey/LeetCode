@@ -1,0 +1,35 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class Solution {
+    List<List<Integer>> subSets;
+    int[] nums;
+
+    public static void main(String[] args) {
+        new Solution().subsets(new int[]{1, 2, 3});
+    }
+
+    public List<List<Integer>> subsets(int[] nums) {
+        subSets = new ArrayList<>();
+        this.nums = nums;
+
+        subSets.add(new ArrayList<>());
+
+        for (int i = 0; i < nums.length; i++) {
+            findSubSets(new ArrayList<>(), i);
+        }
+
+        return subSets;
+    }
+
+    void findSubSets(List<Integer> prevSet, int i) {
+        List<Integer> subSet = new ArrayList<>(prevSet);
+
+        subSet.add(nums[i++]);
+        subSets.add(subSet);
+
+        for (; i < nums.length; i++) {
+            findSubSets(subSet, i);
+        }
+    }
+}

@@ -1,0 +1,31 @@
+class Solution {
+    int N;
+    int S;
+    int[] sequence;
+    int result;
+
+    public int subarraySum(int[] nums, int k) {
+        N = nums.length;
+        S = k;
+        sequence = nums;
+        result = 0;
+
+        for (int i = 0; i < N; i++) {
+            makeSubSequence(i, 0);
+        }
+
+        return result;
+    }
+
+    void makeSubSequence(int index, int value) {
+        value += sequence[index];
+
+        if (value == S) {
+            result++;
+        }
+
+        if (index + 1 < N) {
+            makeSubSequence(index + 1, value);
+        }
+    }
+}

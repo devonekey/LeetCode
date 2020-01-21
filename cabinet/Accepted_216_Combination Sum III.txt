@@ -1,0 +1,53 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class Solution {
+    List<List<Integer>> combination;
+
+    public static void main(String[] args) {
+//        System.out.println(new Solution().combinationSum3(3, 7));
+//        System.out.println(new Solution().combinationSum3(3, 9));
+//        System.out.println(new Solution().combinationSum3(2, 18));
+        System.out.println(new Solution().combinationSum3(3, 15));
+    }
+
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        combination = new ArrayList<>();
+
+        for (int i = n - (k - 1) * k / 2; i > k - 1; i--) {
+            if (i > 9) {
+                continue;
+            }
+
+            List<Integer> list = new ArrayList<>();
+
+            list.add(i);
+
+            findExtra(list, i, k - 1, n - i);
+        }
+
+        return combination;
+    }
+
+    void findExtra(List<Integer> prevList, int prevNum, int k, int n) {
+        for (int i = n - (k - 1) * k / 2; i > k - 1; i--) {
+            if (i >= prevNum) {
+                continue;
+            }
+
+            List<Integer> list = new ArrayList<>(prevList);
+
+            list.add(i);
+
+            if (k == 1) {
+                if (n == i) {
+                    combination.add(list);
+                }
+
+                break;
+            } else {
+                findExtra(list, i, k - 1, n - i);
+            }
+        }
+    }
+}

@@ -1,0 +1,73 @@
+import java.util.*;
+
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println(new Solution().longestStrChain(new String[]{"a", "b", "ba", "bca", "bda", "bdca"}));
+    }
+
+    public int longestStrChain(String[] words) {
+        Map<Integer, Node> chain = new HashMap<>();
+
+        for (String word : words) {
+            chain.put(word.hashCode(), new Node(word));
+        }
+
+        for (String word1 : words) {
+            for (String word2 : words) {
+                if (word1.length() - word2.length() == 1 &&
+                        chain.get(word1.hashCode()).contains(word2) &&
+                        word1.compareTo(word2) != 0) {
+                    Node word1Node = chain.get(word1.hashCode());
+
+                    word1Node.add(chain.get(word2.hashCode()));
+                    chain.put(word1.hashCode(), word1Node);
+                }
+            }
+        }
+
+        Iterator<Integer> iterator = chain.keySet().iterator();
+        int max = 1;
+
+        while (iterator.hasNext()) {
+            int key = iterator.next();
+
+            max = Math.max(chain.get(key).size(), max);
+        }
+
+        return max;
+    }
+
+    class Node {
+        String word;
+        List<Node> children;
+
+        Node(String word) {
+            this.word = word;
+            children = new ArrayList<>();
+        }
+
+        void add(Node child) {
+            children.add(child);
+        }
+
+        int size() {
+            int size = 0;
+
+            for (Node child : children) {
+                size = Math.max(child.size(), size);
+            }
+
+            return ++size;
+        }
+
+        boolean contains(String s) {
+            for (char spell : s.toCharArray()) {
+                if (!word.contains(Character.toString(spell))) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+}

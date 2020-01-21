@@ -1,0 +1,54 @@
+import java.util.*;
+
+public class Solution {
+    public static void main(String[] args) {
+        System.out.println(new Solution().alphabetBoardPath("code"));
+    }
+
+    private String alphabetBoardPath(String target) {
+        Map<Integer, Point> map = new HashMap<>();
+
+        for (int i = 0; i <= 'z' - 'a'; i++) {
+            map.put(i, new Point(i % 5, i / 5));
+        }
+
+        Point prevPoint = map.get(0);
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < target.toCharArray().length; i++) {
+            Point curPoint = map.get(target.toCharArray()[i] - 'a');
+
+            for (int j = 0; j < prevPoint.x - curPoint.x; j++) {
+                stringBuilder.append("L");
+            }
+
+            for (int j = 0; j < prevPoint.y - curPoint.y; j++) {
+                stringBuilder.append("U");
+            }
+
+            for (int j = 0; j < curPoint.x - prevPoint.x; j++) {
+                stringBuilder.append("R");
+            }
+
+            for (int j = 0; j < curPoint.y - prevPoint.y; j++) {
+                stringBuilder.append("D");
+            }
+
+            stringBuilder.append("!");
+
+            prevPoint = curPoint;
+        }
+
+        return stringBuilder.toString();
+    }
+
+    class Point {
+        int x;
+        int y;
+
+        Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+}
