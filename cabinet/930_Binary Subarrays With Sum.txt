@@ -1,0 +1,9 @@
+public class Solution {
+    public static void main(String[] args) {
+        new Solution().numSubarraysWithSum(new int[]{1, 0, 1, 0, 1}, 2);
+    }
+
+    public int numSubarraysWithSum(int[] A, int S) {
+        return -1;
+    }
+}
