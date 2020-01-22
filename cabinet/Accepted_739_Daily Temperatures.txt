@@ -1,0 +1,27 @@
+public class Solution {
+    public static void main(String[] args) {
+        new Solution().dailyTemperatures(new int[]{73, 74, 75, 71, 69, 72, 76, 73});
+    }
+
+    public int[] dailyTemperatures(int[] T) {
+        int[] days = new int[T.length];
+        int[] coldDayIndices = new int[T.length];
+        int peek = 0;
+        coldDayIndices[peek] = days[0];
+
+        for (int i = 1; i < T.length; i++) {
+            for (int j = peek; j >= 0; j--) {
+                if (T[i] > T[coldDayIndices[j]]) {
+                    days[coldDayIndices[j]] = i - coldDayIndices[j];
+                    peek--;
+                } else {
+                    break;
+                }
+            }
+
+            coldDayIndices[++peek] = i;
+        }
+
+        return days;
+    }
+}

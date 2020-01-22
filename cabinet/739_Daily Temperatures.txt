@@ -1,9 +1,0 @@
-public class Solution {
-    public static void main(String[] args) {
-        new Solution().dailyTemperatures(new int[]{73, 74, 75, 71, 69, 72, 76, 73});
-    }
-
-    public int[] dailyTemperatures(int[] T) {
-        return null;
-    }
-}

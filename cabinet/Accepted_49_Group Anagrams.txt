@@ -1,0 +1,30 @@
+import java.util.*;
+
+public class Solution {
+    public static void main(String[] args) {
+        new Solution().groupAnagrams(new String[]{"eat", "tea", "tan", "ate", "nat", "bat"});
+    }
+
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<Integer, List<String>> group = new HashMap<>();
+
+        for (String str : strs) {
+            char[] target = str.toCharArray();
+
+            Arrays.sort(target);
+
+            if (group.containsKey(Arrays.hashCode(target))) {
+                group.get(Arrays.hashCode(target)).add(str);
+
+                continue;
+            }
+
+            List<String> anagrams = new ArrayList<>();
+
+            anagrams.add(str);
+            group.put(Arrays.hashCode(target), anagrams);
+        }
+
+        return new ArrayList<>(group.values());
+    }
+}
