@@ -1,0 +1,34 @@
+import java.util.*;
+
+public class Solution {
+    public static void main(String[] args) {
+        new Solution().topKFrequent(new int[]{1, 1, 1, 2, 2, 3}, 2);
+    }
+
+    public List<Integer> topKFrequent(int[] nums, int k) {
+        List<Integer> list = new ArrayList<>();
+        Map<Integer, Integer> map = new HashMap<>();
+        List<Map.Entry<Integer, Integer>> entries;
+
+        for (int num : nums) {
+            int frequency = map.getOrDefault(num, 0);
+
+            map.put(num, ++frequency);
+        }
+
+        entries = new ArrayList<>(map.entrySet());
+
+        entries.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+
+        for (Map.Entry<Integer, Integer> entry : entries) {
+            if (k == 0) {
+                break;
+            }
+
+            list.add(entry.getKey());
+            k--;
+        }
+
+        return list;
+    }
+}
