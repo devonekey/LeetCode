@@ -1,0 +1,46 @@
+class Solution {
+    fun main(args: Array<String>) {
+    //     val A = intArrayOf(2, 1, 2, 4, 2, 2)
+    //     val B = intArrayOf(5, 2, 6, 2, 3, 2)
+        val A = intArrayOf(1, 2, 1, 1, 1, 2, 2, 2)
+        val B = intArrayOf(2, 1, 2, 2, 2, 2, 2, 2)
+
+        println(minDominoRotations(A, B))
+    }
+    
+    private var min = Int.MAX_VALUE
+    
+    fun minDominoRotations(A: IntArray, B: IntArray): Int {
+        var i = 0
+        var intSet = mutableSetOf(A[i], B[i])
+
+        for (i in A.indices) {
+            if (intSet.intersect(setOf(A[i], B[i])).isEmpty()) {
+                return -1
+            } else {
+                intSet = intSet.intersect(setOf(A[i], B[i])).toMutableSet()
+            }
+        }
+
+        intSet.forEach {
+            findMinimumRotation(A, it)
+            findMinimumRotation(B, it)
+
+            return@forEach
+        }
+
+        return min
+    }
+
+    private fun findMinimumRotation(intArr: IntArray, target: Int) {
+        var rotation = 0
+
+        intArr.forEach {
+            if (target != it) {
+                rotation++
+            }
+        }
+
+        min = Math.min(min, rotation)
+    }
+}
