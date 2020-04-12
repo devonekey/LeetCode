@@ -1,0 +1,17 @@
+class Solution {
+    fun searchMatrix(matrix: Array<IntArray>, target: Int): Boolean {
+        matrix
+            .filter {
+                !it.isEmpty() && it.get(0) <= target && it.get(it.lastIndex) >= target
+            }
+            .forEach {
+                it.forEach {
+                    if (it == target) {
+                        return true
+                    }
+                }
+            }
+
+        return false
+    }
+}
