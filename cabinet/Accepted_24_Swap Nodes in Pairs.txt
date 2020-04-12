@@ -1,0 +1,42 @@
+
+class Solution {
+    fun main(args: Array<String>) {
+        var head = ListNode(1)
+        head.next = ListNode(2)
+        head.next!!.next = ListNode(3)
+        head.next!!.next!!.next = ListNode(4)
+
+        swapPairs(head)
+    }
+    
+    fun swapPairs(head: ListNode?): ListNode? {
+        var currentNode = head
+        var prevNode: ListNode? = null
+        var nextNode = head?.next
+        var headNode = if (head == null || head.next == null) {
+            head
+        } else {
+            head.next
+        }
+
+        while (currentNode != null && nextNode != null) {
+            currentNode.next = nextNode.next.also {
+                if (prevNode != null) {
+                    prevNode!!.next = nextNode
+                }
+
+                nextNode!!.next = currentNode
+            }
+
+            prevNode = currentNode
+            currentNode = currentNode.next
+            nextNode = currentNode?.next
+        }
+
+        return headNode
+    }
+    
+    class ListNode(var `val`: Int) {
+        var next: ListNode? = null
+    }
+}
