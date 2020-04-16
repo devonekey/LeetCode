@@ -1,0 +1,38 @@
+class Solution {
+    fun main(args: Array<String>) {
+//     println(rankTeams(arrayOf("ABC", "ACB", "ABC", "ACB", "ACB")))
+//     println(rankTeams(arrayOf("WXYZ", "XYZW")))
+//     println(rankTeams(arrayOf("ZMNAGUEDSJYLBOPHRQICWFXTVK")))
+//     println(rankTeams(arrayOf("BCA", "CAB", "CBA", "ABC", "ACB", "BAC")))
+        println(rankTeams(arrayOf("M", "M", "M", "M")))
+    }
+    
+    fun rankTeams(votes: Array<String>): String {
+        val map = mutableMapOf<Char, Int>()
+        var rank = 0
+
+        votes.forEach {
+            it.forEach {
+                map.put(it, map.getOrDefault(it, 0) + rank++)
+            }
+
+            rank = 0
+        }
+
+        return map
+            .toSortedMap(Comparator() { e1, e2 -> 
+                val comp = map.getValue(e1) - map.getValue(e2)
+
+                if (comp == 0) {
+                    e1.compareTo(e2)
+                } else {
+                    comp
+                }
+            })
+            .map {
+                it.key
+            }
+            .toList()
+            .joinToString(separator = "")
+    }
+}
