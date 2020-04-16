@@ -1,0 +1,45 @@
+class Solution {
+    fun main(args: Array<String>) {
+//         println(rankTeams(arrayOf("ABC", "ACB", "ABC", "ACB", "ACB")))
+//         println(rankTeams(arrayOf("WXYZ", "XYZW")))
+//         println(rankTeams(arrayOf("ZMNAGUEDSJYLBOPHRQICWFXTVK")))
+//         println(rankTeams(arrayOf("BCA", "CAB", "CBA", "ABC", "ACB", "BAC")))
+//         println(rankTeams(arrayOf("M", "M", "M", "M")))
+        println(rankTeams(arrayOf("FVSHJIEMNGYPTQOURLWCZKAX", "AITFQORCEHPVJMXGKSLNZWUY", "OTERVXFZUMHNIYSCQAWGPKJL", "VMSERIJYLZNWCPQTOKFUHAXG", "VNHOZWKQCEFYPSGLAMXJIUTR", "ANPHQIJMXCWOSKTYGULFVERZ", "RFYUXJEWCKQOMGATHZVILNSP", "SCPYUMQJTVEXKRNLIOWGHAFZ", "VIKTSJCEYQGLOMPZWAHFXURN", "SVJICLXKHQZTFWNPYRGMEUAO", "JRCTHYKIGSXPOZLUQAVNEWFM", "NGMSWJITREHFZVQCUKXYAPOL", "WUXJOQKGNSYLHEZAFIPMRCVT", "PKYQIOLXFCRGHZNAMJVUTWES", "FERSGNMJVZXWAYLIKCPUQHTO", "HPLRIUQMTSGYJVAXWNOCZEKF", "JUVWPTEGCOFYSKXNRMHQALIZ", "MWPIAZCNSLEYRTHFKQXUOVGJ", "EZXLUNFVCMORSIWKTYHJAQPG", "HRQNLTKJFIEGMCSXAZPYOVUW", "LOHXVYGWRIJMCPSQENUAKTZF", "XKUTWPRGHOAQFLVYMJSNEIZC", "WTCRQMVKPHOSLGAXZUEFYNJI")))
+    }
+
+    fun rankTeams(votes: Array<String>): String {
+        val map = mutableMapOf<Char, IntArray>()
+
+        votes.forEach {
+            for (i in it.indices) {
+                var intArr = map.getOrElse(it.get(i), {
+                    IntArray(it.length) { 0 }
+                })
+
+                intArr[i]++
+
+                map.put(it.get(i), intArr)
+            }
+        }
+
+        return map
+            .toSortedMap(Comparator() comp@{ key1, key2 -> 
+                val intArr1 = map.getValue(key1)
+                val intArr2 = map.getValue(key2)
+
+                for (i in intArr1.indices) {
+                    if (intArr1[i] - intArr2[i] != 0) {
+                        return@comp (intArr2[i] - intArr1[i])
+                    }
+                }
+
+                key1.compareTo(key2)
+            })
+            .map {
+                it.key
+            }
+            .toList()
+            .joinToString(separator = "")
+    }
+}
