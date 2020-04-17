@@ -1,0 +1,53 @@
+class Solution {
+    fun main(args: Array<String>) {
+//     println(combinationSum(intArrayOf(2, 3, 6, 7), 7))
+//     println(combinationSum(intArrayOf(2, 3, 5), 8))
+//     println(combinationSum(intArrayOf(8, 7, 4, 3), 11))
+//     println(combinationSum(intArrayOf(7, 3, 2), 18))
+        println(combinationSum(intArrayOf(4, 2, 7, 5, 6), 16))
+    }
+    
+    val combination = mutableSetOf<MutableList<Int>>()
+
+    fun combinationSum(candidates: IntArray, target: Int): List<List<Int>> {
+        var filteredCandidates = candidates.sorted().filter { it <= target }
+
+        combination.clear()
+
+        while (filteredCandidates.size > 0) {
+            combine(filteredCandidates, target, mutableListOf<Int>())
+
+            filteredCandidates = filteredCandidates.dropLast(1)
+        }
+
+        return combination.toList()
+    }
+
+    fun combine(candidates: List<Int>, target: Int, prevList: List<Int>) {
+        if (candidates.size == 0) {
+            return
+        }
+
+        val list = mutableListOf<Int>()
+        val residue = target - candidates.last()
+
+        list.addAll(prevList)
+
+        if (residue == 0) {
+            combine(candidates.dropLast(1), target, mutableListOf<Int>().apply { addAll(list) })
+        
+            list.add(candidates.last())
+
+            combination.add(list)
+        } else if (residue > 0) {
+            combine(candidates.dropLast(1), target, mutableListOf<Int>().apply { addAll(list) })
+
+            list.add(candidates.last())
+
+            combine(candidates, residue, mutableListOf<Int>().apply { addAll(list) })
+            combine(candidates.dropLast(1), residue, list)
+        } else {
+            combine(candidates.dropLast(1), target, list)
+        }
+    }
+}
