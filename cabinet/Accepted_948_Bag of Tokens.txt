@@ -1,0 +1,34 @@
+class Solution {
+    fun main(args: Array<String>) {
+        println(bagOfTokensScore(intArrayOf(100), 50))
+        println(bagOfTokensScore(intArrayOf(100, 200), 150))
+        println(bagOfTokensScore(intArrayOf(100, 200, 300, 400), 200))
+        println(bagOfTokensScore(intArrayOf(25, 91), 99))
+        println(bagOfTokensScore(intArrayOf(81, 91, 31), 73))
+    }
+
+    fun bagOfTokensScore(tokens: IntArray, P: Int): Int {
+        var sortedTokens = tokens.sorted()
+        var left = 0
+        var right = sortedTokens.size - 1
+        var currentPower = P
+        var currentPoint = 0
+        var maxPoint = 0
+
+        while (left <= right) {
+            if (currentPower >= sortedTokens[left]) {
+                currentPower -= sortedTokens[left++]
+                currentPoint++
+            } else if (currentPoint > 0) {
+                currentPower += sortedTokens[right--]
+                currentPoint--
+            } else {
+                return maxPoint
+            }
+
+            maxPoint = Math.max(maxPoint, currentPoint)
+        }
+
+        return maxPoint
+    }
+}
