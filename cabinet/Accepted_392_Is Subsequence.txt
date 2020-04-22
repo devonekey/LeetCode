@@ -1,0 +1,22 @@
+class Solution {
+    fun main(args: Array<String>) {
+        println(isSubsequence(s = "abc", t = "ahbgdc"))
+        println(isSubsequence(s = "axc", t = "ahbgdc"))
+    }
+    
+    fun isSubsequence(s: String, t: String): Boolean {
+        if (s.isEmpty()) {
+            return true
+        }
+
+        var i = 0
+
+        t.forEach {
+            if (it == s[i] && ++i == s.length) {
+                return true
+            }
+        }
+
+        return false
+    }
+}
