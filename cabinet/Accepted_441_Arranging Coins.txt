@@ -1,0 +1,48 @@
+class Solution {
+    fun main(args: Array<String>) {
+        customPrintln(0, arrangeCoins(n = 0))
+        customPrintln(1, arrangeCoins(n = 1))
+        customPrintln(5, arrangeCoins(n = 5))
+        customPrintln(8, arrangeCoins(n = 8))
+        customPrintln(54, arrangeCoins(n = 54))
+        customPrintln(55, arrangeCoins(n = 55))
+        customPrintln(56, arrangeCoins(n = 56))
+        customPrintln(1804289383, arrangeCoins(n = 1804289383))
+        customPrintln(2147483646, arrangeCoins(n = 2147483646))
+        customPrintln(2147483647, arrangeCoins(n = 2147483647))
+    }
+    
+    fun arrangeCoins(n: Int): Int {
+        return search(n.toLong()).toInt()
+    }
+
+    tailrec fun search(
+        target: Long,
+        left: Long = 1L,
+        right: Long = (Math.sqrt(Int.MAX_VALUE.toDouble()) * Math.sqrt(2.0) + 1).toLong()
+    ): Long {
+        val mid: Long = (left + right) / 2L
+        val coins: Long = (mid / 2.0 * (mid + 1L)).toLong()
+        
+//     println("""
+// left : $left
+// mid : $mid
+// right : $right
+// target : $target
+// coins : $coins
+// ----- ----- ----- ----- ----- 
+//     """.trimMargin())
+
+        if (left >= right) {
+            return if (coins > target) mid - 1L else mid
+        } else if (coins > target) {
+            return search(target, left, mid - 1L)
+        } else if (coins == target) {
+            return mid
+        } else {
+            return search(target, mid + 1L, right)
+        }
+    }
+    
+    fun customPrintln(n: Int, stairs: Int) = println("n : $n, answer is $stairs")
+}
