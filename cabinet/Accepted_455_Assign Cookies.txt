@@ -1,0 +1,27 @@
+class Solution {
+    companion object {
+        @JvmStatic fun main(args: Array<String>) {
+            println(findContentChildren(intArrayOf(1, 2, 3), intArrayOf(1, 1)))
+            println(findContentChildren(intArrayOf(1, 2), intArrayOf(1, 2, 3)))
+        }
+
+        fun findContentChildren(g: IntArray, s: IntArray): Int {
+            var i = 0
+            val cookies = s.sorted()
+            var contentedChildren = 0
+
+            g.sorted().forEach {
+                while (i < cookies.size) {
+                    if (it <= cookies[i++]) {
+                        println("$i")
+                        contentedChildren++
+
+                        return@forEach
+                    }
+                }
+            }
+
+            return contentedChildren
+        }
+    }
+}
