@@ -1,0 +1,28 @@
+class Solution {
+    companion object {
+        @JvmStatic fun main(args: Array<String>) {
+            println(climbStairs(1))
+            println(climbStairs(2))
+            println(climbStairs(3))
+            println(climbStairs(4))
+            println(climbStairs(5))
+            println(climbStairs(6))
+        }
+
+        fun climbStairs(n: Int): Int {
+            val dp = IntArray(n)
+
+            dp[0] = 1
+
+            if (n > 1) {
+                dp[1] = 2
+            }
+
+            for (i in 2..dp.lastIndex) {
+                dp[i] = dp[i - 1] + dp[i - 2]
+            }
+
+            return dp[dp.lastIndex]
+        }
+    }
+}
