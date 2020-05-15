@@ -1,0 +1,21 @@
+class Solution {
+    companion object {
+        @JvmStatic fun main(args: Array<String>) {
+            countBits(2).forEach { println(it) }
+        }
+
+        fun countBits(num: Int): IntArray {
+            val bits = IntArray(num + 1).apply {
+                if (num > 0) {
+                    this[1] = 1
+                }
+            }
+
+            for (i in 0..num) {
+                bits[i] = bits[i / 2] + bits[i % 2]
+            }
+
+            return bits
+        }
+    }
+}
