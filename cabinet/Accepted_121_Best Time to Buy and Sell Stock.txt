@@ -1,0 +1,34 @@
+import kotlin.math.max
+
+/**
+ * ## 121, Best Time to Buy and Sell Stock
+ * #### Related Topics : Array, Dynamic Programming
+ * #### How to solve
+ * - 주어진 배열에서 두 수의 차가 가장 클 때, 그 차이를 출력하는 문제이다.(단, 두 수의 차이가 음수인 것은 허용되지 않음)
+ * - 배열을 순회하면서 현재 가장 낮은 값을 갱신한다.
+ * - 값을 갱신하지 않는 경우에는 두 수의 차이를 저장하고 배열을 모두 순회하면 차이를 출력함으로써 쉽게 해결할 수 있다.
+ */
+class Solution {
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            println(maxProfit(intArrayOf(7, 1, 5, 3, 6, 4)))
+            println(maxProfit(intArrayOf(7, 6, 4, 3, 1)))
+        }
+
+        fun maxProfit(prices: IntArray): Int {
+            var minPrice = if (prices.isEmpty()) return 0 else prices[0]
+            var profit = 0
+
+            for (i in prices.indices) {
+                if (prices[i] < minPrice) {
+                    minPrice = prices[i]
+                } else {
+                    profit = max(prices[i] - minPrice, profit)
+                }
+            }
+
+            return profit
+        }
+    }
+}

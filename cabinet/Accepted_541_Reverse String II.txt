@@ -1,0 +1,34 @@
+/**
+ * ## 541, Reverse String II
+ * #### Related Topics : String
+ * #### How to solve
+ * - 0번째 부터 k - 1번째 까지의 문자열은 반전시키고, k번째 부터 2k - 1번째 까지의 문자열은 반전시키지 않는 문제로
+ * 반전시켜야할 문자열이 k보다 작은 경우에는 남은 문자열 끝까지 반전시키면 된다.
+ */
+class Solution {
+    companion object {
+        @JvmStatic fun main(args: Array<String>) {
+            println(reverseStr("abcdefg", 2))
+            println(reverseStr("a", 2))
+            println(reverseStr("abcdefg", 1213))
+        }
+
+        fun reverseStr(s: String, k: Int): String {
+            var str = s
+            var reverseRound = true
+
+            for (i in 0..str.length step k) {
+                reverseRound = if (reverseRound) {
+                    val endExclusive = if (i + k > str.length) str.length else i + k
+                    str = str.replaceRange(i, endExclusive, str.substring(i, endExclusive).reversed())
+
+                    false
+                } else {
+                    true
+                }
+            }
+
+            return str
+        }
+    }
+}
