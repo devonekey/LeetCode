@@ -1,0 +1,47 @@
+import utils.*
+
+/**
+ * # 503. Next Greater Element II
+ * ##### Topics: Array, Stack, Monotonic Stack
+ * ##### Level: Medium
+ * ##### Status: Accepted
+ * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 순환 가능한 숫자 배열이 주어지고 배열을 순회하면서,
+ * 특정 위치의 수보다 큰 수를 발견하면 새 배열에 기록하여 반환하는 문제이다.
+ *
+ * 만약 큰 수를 발견하지 못하는 경우에는 -1을 기록한다.
+ *
+ * 1. 주어진 배열에 같은 배열을 추가하여 긴 배열을 만든다.
+ * 2. 순회하면서 특정 위치의 수보다 처음으로 발견되는 큰 수가 있는지 찾는다.
+ * 3. 큰 수가 발견되면 그 수를 기록하고, 발견되지 않으면 -1을 기록한다.
+ *
+ * 해당 풀이는 O(N^2)의 성능으로 최적의 성능에 비해 비효율적이다.
+ */
+class Solution {
+    fun nextGreaterElements(nums: IntArray): IntArray {
+        val doubleNums = nums.plus(nums).toList()
+        val list = mutableListOf<Int>().apply {
+            addAll(
+                nums.mapIndexed { index, num ->
+                    doubleNums
+                        .subList(index, nums.size * 2)
+                        .firstOrNull { it > num }
+                        ?: -1
+                }
+            )
+        }
+
+        return list.toIntArray()
+    }
+}
+
+fun main() {
+    Solution().nextGreaterElements(nums = intArrayOf(1, 2, 1))
+        .runTestcase(expected = intArrayOf(2, -1, 2))
+    Solution().nextGreaterElements(nums = intArrayOf(1, 2, 3, 4, 3))
+        .runTestcase(expected = intArrayOf(2, 3, 4, -1, 4))
+    Solution().nextGreaterElements(nums = intArrayOf(5, 4, 3, 2, 1))
+        .runTestcase(expected = intArrayOf(-1, 5, 5, 5, 5))
+}
