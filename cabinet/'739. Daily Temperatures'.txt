@@ -1,0 +1,56 @@
+import utils.*
+import java.util.*
+
+/**
+ * # 739. Daily Temperatures
+ * ##### Topics: Array, Stack
+ * ##### Level: Medium
+ * ##### Status: Accepted
+ * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 온도가 기록된 배열이 주어지고 배열을 순회하면서 현재 온도보다 더 따뜻한 온도를 발견하면,
+ * 따뜻해지기까지의 날짜(배열에서의 위치 차)를 새 배열에 기록하여 반환하는 문제이다.
+ *
+ * 만약 더 따뜻한 온도를 발견하지 못하면 0을 기록한다.
+ *
+ * 1. 온도가 기록된 배열을 순회한다.
+ * 2. 온도의 위치를 저장하는 stack이 비어있거나 stack 최상위의 위치가 가리키는 온도보다 현재 온도가 낮거나 같다면,
+ * 현재 온도 위치를 stack에 추가한다.
+ * 3. 만약 위 조건에 맞지 않고 stack 최상위의 위치가 가리키는 온도보다 현재 온도가 높다면,
+ * 현재 온도의 위치와 stack 최상위의 위치 차를 새 배열에 기록하고 stack에서 제외시키며 이 과정을 반복한다.
+ * 4. 그 뒤 현재 온도 위치를 stack에 추가하고 위의 과정들을 반복한다.
+ * 5. 새 배열에 기록한 위치 차를 반환한다.
+ */
+class Solution {
+    fun dailyTemperatures(temperatures: IntArray): IntArray {
+        val answer = IntArray(temperatures.size)
+        val stack = Stack<Int>()
+
+        temperatures.forEachIndexed { index, temperature ->
+            if (stack.isEmpty() || temperature <= temperatures[stack.peek()]) {
+                stack.push(index)
+
+                return@forEachIndexed
+            }
+
+            while (stack.isNotEmpty() && temperature > temperatures[stack.peek()]) {
+                stack.pop()
+                    .let { targetIndex -> answer[targetIndex] = index - targetIndex }
+            }
+
+            stack.push(index)
+        }
+
+        return answer
+    }
+}
+
+fun main() {
+    Solution().dailyTemperatures(temperatures = intArrayOf(73, 74, 75, 71, 69, 72, 76, 73))
+        .runTestcase(expected = intArrayOf(1, 1, 4, 2, 1, 1, 0, 0))
+    Solution().dailyTemperatures(intArrayOf(30, 40, 50, 60))
+        .runTestcase(expected = intArrayOf(1, 1, 1, 0))
+    Solution().dailyTemperatures(intArrayOf(30, 60, 90))
+        .runTestcase(expected = intArrayOf(1, 1, 0))
+}
