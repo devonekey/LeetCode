@@ -1,0 +1,54 @@
+import utils.*
+import java.util.*
+
+/**
+ * # 1944. Number of Visible People in a Queue
+ * ##### Topics: Array, Stack, Monotonic Stack
+ * ##### Level: Hard
+ * ##### Status: Accepted
+ * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 높이를 나타내는 숫자 배열이 주어지고 각 위치에서 배열 순서상 오른쪽을 바라볼 때,
+ * 볼 수 있는 높이들의 개수를 새 배열에 기록하여 반환하는 문제이다.
+ *
+ * 현재 위치에서 바라본 오른쪽의 특정 높이가 현재 위치의 높이보다 낮다면, 그 이후의 더 낮은 높이는 볼 수 없다.
+ *
+ * 현재 위치에서 바라본 오른쪽의 특정 높이가 현재 위치의 높이보다 높다면, 그 이후의 다른 높이는 볼 수 없다.
+ *
+ * 1. 우측부터 역으로 순회한다.
+ * 2. 만약 stack 최상위의 높이가 현재 높이보다 낮다면, stack에서 모두 꺼내고 그만큼 볼 수 있다고 간주한다.
+ * 3. 만약 stack 최상위의 높이가 현재 높이보다 높다면, 볼 수 있다고 간주한다.
+ * 4. 그리고 자신을 stack에 넣는다.
+ * 5. 모든 높이를 순회할 때까지 위 과정을 반복한다.
+ */
+class Solution {
+    fun canSeePersonsCount(heights: IntArray): IntArray {
+        val answer = IntArray(heights.size)
+        val stack = Stack<Int>()
+
+        (heights.lastIndex downTo 0).forEach {
+            while (stack.isNotEmpty() && heights[it] > stack.peek()) {
+                answer[it]++
+                stack.pop()
+            }
+
+            if (stack.isNotEmpty() && heights[it] < stack.peek()) {
+                answer[it]++
+            }
+
+            stack.push(heights[it])
+        }
+
+        return answer
+    }
+}
+
+fun main() {
+    Solution().canSeePersonsCount(intArrayOf(10, 6, 8, 5, 11, 9))
+        .runTestcase(expected = intArrayOf(3, 1, 2, 1, 1, 0))
+    Solution().canSeePersonsCount(intArrayOf(5, 1, 2, 3, 10))
+        .runTestcase(expected = intArrayOf(4, 1, 1, 1, 0))
+    Solution().canSeePersonsCount(intArrayOf(4, 3, 2, 1))
+        .runTestcase(expected = intArrayOf(1, 1, 1, 0))
+}
