@@ -1,0 +1,74 @@
+import java.util.*
+
+/**
+ * <h1>Number of Visible People in a Queue</h1>
+ * <h5>문제: 1944</h5>
+ * <h5>분류: Array, Stack</h5>
+ * <h5>난이도: Hard</h5>
+ * <h5>풀이</h5>
+ * <ul>
+ * <li>높이를 나타내는 숫자 배열이 주어지고 각 위치에서 배열 순서상 오른쪽을 바라볼 때,
+ * 볼 수 있는 높이들의 개수를 새 배열에 기록하여 반환하는 문제이다.</li>
+ * <li>현재 위치에서 바라본 오른쪽의 특정 높이가 현재 위치의 높이보다 낮다면, 그 이후의 더 낮은 높이는 볼 수 없다.</li>
+ * <li>현재 위치에서 바라본 오른쪽의 특정 높이가 현재 위치의 높이보다 높다면, 그 이후의 다른 높이는 볼 수 없다.</li>
+ * <li>아래와 같은 방법으로 해결했다.</li>
+ * <ol>
+ *     <li>우측부터 역으로 순회한다.</li>
+ *     <li>만약 stack 최상위의 높이가 현재 높이보다 낮다면, stack에서 모두 꺼내고 그만큼 볼 수 있다고 간주한다.</li>
+ *     <li>만약 stack 최상위의 높이가 현재 높이보다 높다면, 볼 수 있다고 간주한다.</li>
+ *     <li>그리고 자신을 stack에 넣는다.</li>
+ *     <li>모든 높이를 순회할 때까지 위 과정을 반복한다.</li>
+ * </ol>
+ * </ul>
+ */
+class Solution {
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            println(
+                canSeePersonsCount(intArrayOf(10, 6, 8, 5, 11, 9))
+                    .joinToString(
+                        separator = ",",
+                        prefix = "[",
+                        postfix = "]"
+                    )
+            )
+            println(
+                canSeePersonsCount(intArrayOf(5, 1, 2, 3, 10))
+                    .joinToString(
+                        separator = ",",
+                        prefix = "[",
+                        postfix = "]"
+                    )
+            )
+            println(
+                canSeePersonsCount(intArrayOf(4, 3, 2, 1))
+                    .joinToString(
+                        separator = ",",
+                        prefix = "[",
+                        postfix = "]"
+                    )
+            )
+        }
+
+        fun canSeePersonsCount(heights: IntArray): IntArray {
+            val answer = IntArray(heights.size)
+            val stack = Stack<Int>()
+
+            (heights.lastIndex downTo 0).forEach {
+                while (stack.isNotEmpty() && heights[it] > stack.peek()) {
+                    answer[it]++
+                    stack.pop()
+                }
+
+                if (stack.isNotEmpty() && heights[it] < stack.peek()) {
+                    answer[it]++
+                }
+
+                stack.push(heights[it])
+            }
+
+            return answer
+        }
+    }
+}
