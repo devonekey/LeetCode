@@ -1,6 +1,7 @@
 class Solution {
-    companion object {
-        @JvmStatic fun main(args: Array<String>) {
-        }
-    }
+    fun foo() = "foo"
+}
+
+fun main() {
+    println(Solution().foo())
 }
