@@ -1,0 +1,43 @@
+/**
+ * # 2866. Beautiful Towers II
+ * ##### Topics: Array, Stack, Monotonic Stack
+ * ##### Level: Medium
+ * ##### Status: Time Limit Exceeded
+ * ##### Language: Kotlin
+ */
+class Solution {
+    fun maximumSumOfHeights(maxHeights: List<Int>): Long {
+        val sumList = MutableList<Long>(maxHeights.size) { 0L }
+
+        maxHeights.forEachIndexed { index, height ->
+            var lHeight = height
+            var rHeight = height
+
+            (index - 1 downTo 0).forEach {
+                if (maxHeights[it] < lHeight) {
+                    lHeight = maxHeights[it]
+                }
+
+                sumList[index] = sumList[index] + lHeight
+            }
+
+            sumList[index] = sumList[index] + height
+
+            ((index + 1)..maxHeights.lastIndex).forEach {
+                if (maxHeights[it] < rHeight) {
+                    rHeight = maxHeights[it]
+                }
+
+                sumList[index] = sumList[index] + rHeight
+            }
+        }
+
+        return sumList.max() ?: 0
+    }
+}
+
+fun main() {
+    println(Solution().maximumSumOfHeights(listOf(5, 3, 4, 1, 1)))
+    println(Solution().maximumSumOfHeights(listOf(6, 5, 3, 9, 2, 7)))
+    println(Solution().maximumSumOfHeights(listOf(3, 2, 5, 5, 2, 3)))
+}
