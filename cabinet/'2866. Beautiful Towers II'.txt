@@ -1,0 +1,63 @@
+import utils.*
+
+/**
+ * # 2866. Beautiful Towers II
+ * ##### Topics: Array, Stack, Monotonic Stack
+ * ##### Level: Medium
+ * ##### Status: Time Limit Exceeded
+ * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 높이를 나타내는 숫자 배열이 주어지고 이를 그래프로 나타낼 수 있다.
+ *
+ * 그 그래프 내에서 극댓값이 하나인 그래프를 만들 때 가질 수 있는 최대 면적을 계산하는 문제이다.
+ *
+ * 1. 높이를 나타내는 숫자 배열을 순회한다.
+ * 2. 현재 높이를 극댓값으로 삼는다.
+ * 3. 현재 위치의 왼쪽 방향으로 순회하면서 이전 위치의 높이를 넘어서지 않는 높이를 채택하여 면적을 구한다.
+ * 4. 현재 높이의 면적을 추가한다.
+ * 5. 현재 위치의 오른쪽 방향으로 순회하면서 이전 위치의 높이를 넘어서지 않는 높이를 채택하여 면적을 구한다.
+ * 6. 계산한 면적을 현재 위치를 기반으로 sumList에 저장한다.
+ * 7. 모두 순회하고 sumList 중에 가장 큰 면적을 반환한다.
+ *
+ * 해당 풀이는 O(N^2)의 성능으로 최적의 성능에 비해 비효율적이다.
+ */
+class Solution {
+    fun maximumSumOfHeights(maxHeights: List<Int>): Long {
+        val sumList = MutableList<Long>(maxHeights.size) { 0L }
+
+        maxHeights.forEachIndexed { index, height ->
+            var lHeight = height
+            var rHeight = height
+
+            (index - 1 downTo 0).forEach {
+                if (maxHeights[it] < lHeight) {
+                    lHeight = maxHeights[it]
+                }
+
+                sumList[index] = sumList[index] + lHeight
+            }
+
+            sumList[index] = sumList[index] + height
+
+            ((index + 1)..maxHeights.lastIndex).forEach {
+                if (maxHeights[it] < rHeight) {
+                    rHeight = maxHeights[it]
+                }
+
+                sumList[index] = sumList[index] + rHeight
+            }
+        }
+
+        return sumList.max() ?: 0
+    }
+}
+
+fun main() {
+    Solution().maximumSumOfHeights(maxHeights = listOf(5, 3, 4, 1, 1))
+        .runTestcase(expected = 13)
+    Solution().maximumSumOfHeights(maxHeights = listOf(6, 5, 3, 9, 2, 7))
+        .runTestcase(expected = 22)
+    Solution().maximumSumOfHeights(maxHeights = listOf(3, 2, 5, 5, 2, 3))
+        .runTestcase(expected = 18)
+}
