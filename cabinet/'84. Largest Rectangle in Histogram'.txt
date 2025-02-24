@@ -1,0 +1,65 @@
+import utils.*
+import java.util.*
+import kotlin.math.*
+
+/**
+ * # 84. Largest Rectangle in Histogram
+ * ##### Topics: Array, Stack, Monotonic Stack
+ * ##### Level: Hard
+ * ##### Status: Accepted
+ * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 높이를 나타내는 숫자 배열이 주어지고 이를 그래프로 나타낼 때,
+ * 만들 수 있는 직사각형 면적 중에 가장 큰 면적을 구하는 문제이다.
+ *
+ * 1. 숫자 배열을 순회한다.
+ * 2. 만약 현재 위치의 높이가 stack 최상위가 가리키는 위치의 높이보다 낮다면,
+ * stack이 비어 있거나 현재 위치의 높이가 stack 최상위가 가리키는 위치의 높이보다 높을 때까지
+ * stack을 꺼내 면적을 계산한다.
+ * 3. 마지막으로 꺼낸 위치를 현재 위치로 바꾸고, stack에 마지막으로 꺼낸 위치를 넣는다.
+ * 4. 모든 높이를 순회할 때까지 위 과정을 반복한다.
+ * 5. 순회를 마치면 stack에는 계산되지 못한 높이들의 위치가 남아있는데, 모두 계산하여 가장 큰 면적을 구한다.
+ */
+class Solution {
+    fun largestRectangleArea(heights: IntArray): Int {
+        var area = 0
+        val indices = Stack<Int>()
+
+        heights.forEachIndexed { index, height ->
+            var target = index
+
+            while (indices.isNotEmpty() && height < heights[indices.peek()]) {
+                target = indices.pop()
+                area = max((index - target) * heights[target], area)
+            }
+
+            heights[target] = heights[index]
+
+            indices.push(target)
+        }
+
+        while (indices.isNotEmpty()) {
+            val target = indices.pop()
+
+            area = max((heights.size - target) * heights[target], area)
+        }
+
+        return area
+    }
+}
+
+fun main() {
+    Solution().largestRectangleArea(heights = intArrayOf(2, 1, 5, 6, 2, 3))
+        .runTestcase(expected = 10)
+    Solution().largestRectangleArea(heights = intArrayOf(2, 4))
+        .runTestcase(expected = 4)
+    Solution().largestRectangleArea(heights = intArrayOf(2, 1, 2))
+        .runTestcase(expected = 3)
+    Solution().largestRectangleArea(heights = intArrayOf(4, 2, 0, 3, 2, 5))
+        .runTestcase(expected = 6)
+    Solution().largestRectangleArea(heights = intArrayOf(1, 2, 2))
+        .runTestcase(expected = 4)
+    Solution().largestRectangleArea(heights = intArrayOf(5, 4, 1, 2))
+        .runTestcase(expected = 8)
+}
