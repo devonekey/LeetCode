@@ -1,0 +1,98 @@
+/**
+ * # 438. Find All Anagrams in a String
+ * ##### Topics: Hash Table, String, Sliding Window
+ * ##### Level: Medium
+ * ##### Status: Accepted
+ * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 문자열 순서를 고려않으면서 p가 s의 부분 문자열이 될 때,
+ * 해당 위치를 배열에 넣어 반환하는 문제이다.
+ *
+ * 1. p의 문자를 순회하면서 해당 문자를 key로 등장 횟수를 value로 간주하고 map에 넣는다.
+ * 2. s의 문자를 순회한다.
+ * 3. 만약 특정 위치의 문자가 map에 없는 문자라면, 일부 데이터를 초기화하고 다음 위치부터 순회한다.
+ * 4. 특정 위치의 문자가 map에 있는 문자라면, map에서 문자를 꺼내 1을 감소시키고 넣는다.
+ * 5. p의 길이를 초과하여 감소시켰으면, 현재 위치에서 p의 길이만큼 뺀 위치의 문자를 꺼내 1을 증가시키고 넣는다.
+ * 6. map에 들어있는 모든 value가 0이라면, 해당 위치를 배열에 넣는다.
+ * 7. 위 과정을 반복하고 배열을 반환한다.
+ *
+ * O(N^2)의 성능으로 최적의 성능은 아니다.
+ */
+class Solution {
+    fun findAnagrams(s: String, p: String): List<Int> {
+        val indices = mutableListOf<Int>()
+        val map = HashMap<Char, Int>()
+
+        fun init() {
+            map.clear()
+            p.forEach { map[it] = map.getOrDefault(it, 0) + 1 }
+        }
+
+        init()
+
+        var i = 0
+        var length = 0
+
+        loop@ while (i <= s.lastIndex) {
+            val k = s[i]
+
+            if (!map.containsKey(k)) {
+                init()
+
+                i++
+                length = 0
+
+                continue@loop
+            }
+
+            val v = map.getOrDefault(k, 0)
+
+            length++
+            map.put(k, v - 1)
+
+            if (length > p.length) {
+                val first = s[i - p.length]
+                map[first] = map.getOrDefault(first, 0) + 1
+            }
+
+            if (map.all { it.value == 0 }) {
+                indices.add(i - p.length + 1)
+            }
+
+            i++
+        }
+
+        return indices
+    }
+}
+
+fun main() {
+    println(
+        Solution()
+            .findAnagrams(s = "cbaebabacd", p = "abc")
+            .joinToString(
+                separator = ", ",
+                prefix = "[",
+                postfix = "]"
+            )
+    )
+    println(
+        Solution()
+            .findAnagrams(s = "abab", p = "ab")
+            .joinToString(
+                separator = ", ",
+                prefix = "[",
+                postfix = "]"
+            )
+    )
+    println(
+        Solution()
+            .findAnagrams(s = "abaacbabc", p = "abc")
+            .joinToString(
+                separator = ", ",
+                prefix = "[",
+                postfix = "]"
+            )
+    )
+}
