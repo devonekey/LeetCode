@@ -1,0 +1,34 @@
+import utils.*
+import kotlin.math.*
+
+/**
+ * # 1696. Jump Game VI
+ * ##### Topics: Array, Dynamic Programming, Queue, Heap (Priority Queue), Monotonic Queue
+ * ##### Level: Medium
+ * ##### Status: Time Limit Exceeded
+ * ##### Language: Kotlin
+ */
+class Solution {
+    fun maxResult(nums: IntArray, k: Int): Int {
+        nums.forEachIndexed { index, num ->
+            var startIndex = max(index - k, 0)
+            var maxNum = nums[startIndex] + num
+
+            (startIndex until index).forEach {
+                nums[index] = max(maxNum, nums[it] + num)
+                maxNum = nums[index]
+            }
+        }
+
+        return nums.last()
+    }
+}
+
+fun main() {
+    Solution().maxResult(nums = intArrayOf(1, -1, -2, 4, -7, 3), k = 2)
+        .runTestcase(expected = 7)
+    Solution().maxResult(nums = intArrayOf(10, -5, -2, 4, 0, 3), k = 3)
+        .runTestcase(expected = 17)
+    Solution().maxResult(nums = intArrayOf(1, -5, -20, 4, -1, 3, -6, -3), k = 2)
+        .runTestcase(expected = 0)
+}
