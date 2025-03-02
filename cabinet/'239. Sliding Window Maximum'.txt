@@ -1,49 +1,48 @@
 import utils.*
-import kotlin.math.*
+import java.util.*
 
 /**
  * # 239. Sliding Window Maximum
  * ##### Topics: Array, Queue, Sliding Window, Heap (Priority Queue), Monotonic Queue
  * ##### Level: Hard
- * ##### Status: Time Limit Exceeded
+ * ##### Status: Accepted
  * ##### Language: Kotlin
  * ##### Explanation
  *
  * 수열(nums)과 크기를 나타내는 수(k)가 주어질 때, 특정 위치로부터 k 까지의 수 중에 최댓값을 찾아 배열에 넣고 반환하는 문제이다.
+ *
+ * 1. nums를 순회한다.
+ * 2. 만약 현재 위치에서 k 만큼 뺀 위치가 최댓값을 가지던 수의 위치였다면, Queue에서 해당 위치를 제거한다.
+ * 3. Queue의 마지막 위치에서 가리키는 수가 현재 위치의 값보다 작다면 제거하고 이를 반복한다.
+ * 4. 반복 이후 Queue의 마지막 위치에 현재 위치를 넣는다.
+ * 5. Queue의 첫 번째 위치를 꺼내 최댓값을 가리키는 숫자의 위치로 간주한다.
+ * 6. k 만큼 nums를 순회했으면, 최댓값을 배열에 넣기 시작한다.
+ * 7. 위 과정을 반복하고 최댓값을 넣은 배열을 반환한다.
  */
 class Solution {
     fun maxSlidingWindow(nums: IntArray, k: Int): IntArray {
         val answer = IntArray(nums.size - k + 1) { Int.MIN_VALUE }
-        val window = mutableListOf<Int>()
+        val indices = LinkedList<Int>()
         var maxNumIndex = 0
 
         nums.forEachIndexed { index, num ->
-            val startIndex = max(index - k + 1, 0)
-
-            window.add(index)
-
-            if (window.size > k) {
-                window.removeAt(0)
+            if (index - k == maxNumIndex) {
+                indices.pop()
             }
 
-            maxNumIndex = when {
-                index >= k && maxNumIndex < startIndex ->
-                    window.map { index -> index to nums[index] }
-                        .maxWith(object : Comparator<Pair<Int, Int>> {
-                            override fun compare(o1: Pair<Int, Int>, o2: Pair<Int, Int>): Int =
-                                o1.second.compareTo(o2.second)
-                        })
-                        ?.first
-                        ?: index
-                nums[maxNumIndex] <= num -> index
-                else -> maxNumIndex
+            while (indices.isNotEmpty() && num > nums[indices.last()]) {
+                indices.removeLast()
             }
 
-            if (window.size < k) {
+            indices.add(index)
+
+            maxNumIndex = indices.peek()
+
+            if (index < k - 1) {
                 return@forEachIndexed
             }
 
-            answer[startIndex] = nums[maxNumIndex]
+            answer[index - k + 1] = nums[maxNumIndex]
         }
 
         return answer
@@ -57,4 +56,6 @@ fun main() {
         .runTestcase(expected = intArrayOf(1))
     Solution().maxSlidingWindow(nums = intArrayOf(1, -1), k = 1)
         .runTestcase(expected = intArrayOf(1, -1))
+    Solution().maxSlidingWindow(nums = intArrayOf(1, 3, 1, 2, 0, 5), k = 3)
+        .runTestcase(expected = intArrayOf(3, 3, 2, 5))
 }
