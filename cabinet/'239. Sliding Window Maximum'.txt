@@ -13,12 +13,37 @@ import kotlin.math.*
  */
 class Solution {
     fun maxSlidingWindow(nums: IntArray, k: Int): IntArray {
-        val answer = IntArray(nums.size - (k - 1)) { Int.MIN_VALUE }
+        val answer = IntArray(nums.size - k + 1) { Int.MIN_VALUE }
+        val window = mutableListOf<Int>()
+        var maxNumIndex = 0
 
-        for (index in 0..nums.lastIndex - (k - 1)) {
-            (index..index + (k - 1)).forEach {
-                answer[index] = max(answer[index], nums[it])
+        nums.forEachIndexed { index, num ->
+            val startIndex = max(index - k + 1, 0)
+
+            window.add(index)
+
+            if (window.size > k) {
+                window.removeAt(0)
             }
+
+            maxNumIndex = when {
+                index >= k && maxNumIndex < startIndex ->
+                    window.map { index -> index to nums[index] }
+                        .maxWith(object : Comparator<Pair<Int, Int>> {
+                            override fun compare(o1: Pair<Int, Int>, o2: Pair<Int, Int>): Int =
+                                o1.second.compareTo(o2.second)
+                        })
+                        ?.first
+                        ?: index
+                nums[maxNumIndex] <= num -> index
+                else -> maxNumIndex
+            }
+
+            if (window.size < k) {
+                return@forEachIndexed
+            }
+
+            answer[startIndex] = nums[maxNumIndex]
         }
 
         return answer
@@ -30,4 +55,6 @@ fun main() {
         .runTestcase(expected = intArrayOf(3, 3, 5, 5, 6, 7))
     Solution().maxSlidingWindow(nums = intArrayOf(1), k = 1)
         .runTestcase(expected = intArrayOf(1))
+    Solution().maxSlidingWindow(nums = intArrayOf(1, -1), k = 1)
+        .runTestcase(expected = intArrayOf(1, -1))
 }
