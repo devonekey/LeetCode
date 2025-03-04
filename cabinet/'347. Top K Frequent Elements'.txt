@@ -1,4 +1,5 @@
 import java.util.*
+import kotlin.math.*
 
 /**
  * # 347. Top K Frequent Elements
@@ -9,22 +10,43 @@ import java.util.*
  * ##### Explanation
  *
  * 수열이 주어지고 출현 빈도에 따라 나열할 때, k 번째까지의 수들을 구하는 문제이다.
+ *
+ * 1. 수열을 순회하며 수에 따른 출현 빈도를 계산하여 Map에 추가한다.
+ * 2. Map을 순회하며 출현 빈도에 따라 수를 가지도록 변환한다.
+ * 3. 출현 빈도가 높은 순으로 순회하며 k번째까지 수들을 구한다.
  */
 class Solution {
     fun topKFrequent(nums: IntArray, k: Int): IntArray {
-        val map = HashMap<Int, Int>()
+        val frequencyMap = HashMap<Int, Int>()
+        var maxFrequency = 0
 
-        nums.forEach { num -> map.put(num, map.getOrDefault(num, 0) + 1) }
+        nums.forEach { num ->
+            val frequency = frequencyMap.getOrDefault(num, 0) + 1
+            maxFrequency = max(maxFrequency, frequency)
+            frequencyMap[num] = frequency
+        }
 
-        return map.toList()
-            .sortedWith(object : Comparator<Pair<Int, Int>> {
-                override fun compare(o1: Pair<Int, Int>, o2: Pair<Int, Int>): Int {
-                    return o2.second.compareTo(o1.second)
-                }
-            })
-            .map { it.first }
-            .subList(0, k)
-            .toIntArray()
+        val keySetArray = Array<MutableSet<Int>?>(size = maxFrequency + 1) { null }
+
+        frequencyMap.forEach { key, value ->
+            val keySet = keySetArray.getOrNull(value) ?: mutableSetOf<Int>(key)
+            keySetArray[value] = keySet.apply { add(key) }
+        }
+
+        var remain = k
+        val answer = mutableListOf<Int>()
+
+        (keySetArray.lastIndex downTo 0)
+            .asSequence()
+            .takeWhile { remain > 0 }
+            .mapNotNull { index -> keySetArray.getOrNull(index) }
+            .forEach { keySet ->
+                remain -= keySet.size
+
+                answer.addAll(keySet)
+            }
+
+        return answer.toIntArray()
     }
 }
 
