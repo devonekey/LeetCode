@@ -1,0 +1,69 @@
+import java.util.*
+import kotlin.math.*
+
+/**
+ * # 2762. Continuous Subarrays
+ * ##### Topics: Array, Queue, Sliding Window, Heap (Priority Queue), Ordered Set, Monotonic Queue
+ * ##### Level: Medium
+ * ##### Status: Accepted
+ * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 수열(nums)이 주어질 때, 최솟값과 최댓값의 차가 2 이하인 부분 수열의 개수를 구하는 문제이다.
+ *
+ * 1. nums를 순회한다.
+ * 2. 최솟값의 위치를 가지는 Deque(minDeque)을 순회하며,
+ * 현재 값이 Deque의 마지막 요소가 가리키는 값보다 작다면 Deque에서 제거한다.
+ * 3. 최댓값의 위치를 가지는 deque(maxDeque)을 순회하며,
+ * 현재 값이 Deque의 마지막 요소가 가리키는 값보다 크다면 Deque에서 제거한다.
+ * 4. minDeque과 maxDeque의 마지막에 현재 위치를 추가한다.
+ * 5. minDeque의 첫 번째 요소가 가리키는 값과 maxDeque의 첫 번째 요소가 가리키는 값의 차가
+ * 2 이하가 되는 위치(start)를 찾을 때까지 6-7의 과정을 반복한다.
+ * 6. minDeque의 첫 번째 요소가 maxDeque 첫 번째 요소보다 앞선다면,
+ * minDeque의 첫 번째 요소를 제거하고 1을 더하여 start로 간주한다.
+ * 7. maxDeque의 첫 번째 요소가 minDeque 첫 번째 요소보다 앞선다면,
+ * maxDeque의 첫 번째 요소를 제거하고 1을 더하여 start로 간주한다.
+ * 8. 이후 start와 현재 위치의 차를 구하여 부분 수열의 개수를 누적시킨다.
+ * 9. nums 순회 이후 누적된 부분 수열의 개수를 반환한다.
+ */
+class Solution {
+    fun continuousSubarrays(nums: IntArray): Long {
+        var total = 0L
+        var start = 0
+        val minDeque = ArrayDeque<Int>()
+        val maxDeque = ArrayDeque<Int>()
+
+        nums.forEachIndexed { index, num ->
+            while (minDeque.isNotEmpty() && num < nums[minDeque.last()]) {
+                minDeque.removeLast()
+            }
+
+            while (maxDeque.isNotEmpty() && num > nums[maxDeque.last()]) {
+                maxDeque.removeLast()
+            }
+
+            minDeque.addLast(index)
+            maxDeque.addLast(index)
+
+            while (minDeque.isNotEmpty() && maxDeque.isNotEmpty() &&
+                abs(nums[minDeque.first()] - nums[maxDeque.first()]) > 2
+            ) {
+                start = if (minDeque.first() < maxDeque.first()) {
+                    minDeque.removeFirst() + 1
+                } else {
+                    maxDeque.removeFirst() + 1
+                }
+            }
+
+            total += index - start + 1
+        }
+
+        return total
+    }
+}
+
+fun main() {
+    println(Solution().continuousSubarrays(nums = intArrayOf(5, 4, 2, 4)))
+    println(Solution().continuousSubarrays(nums = intArrayOf(1, 2, 3)))
+    println(Solution().continuousSubarrays(nums = intArrayOf(4, 4, 2, 3, 1, 2, 5)))
+}
