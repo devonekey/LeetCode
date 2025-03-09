@@ -1,0 +1,77 @@
+import java.util.Comparator
+import java.util.PriorityQueue
+
+/**
+ * # 502. IPO
+ * ##### Topics: Array, Greedy, Sorting, Heap (Priority Queue)
+ * ##### Level: Hard
+ * ##### Status: Accepted
+ * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 프로젝트를 진행 가능 횟수(k), 현재 자산(w), 프로젝트를 진행하면서 얻을 수 있는 이득(profits),
+ * 프로젝트를 진행하기 위한 필요 자산(capital)이 주어질 때,
+ * k 번 프로젝트를 진행하여 얻을 수 있는 최대 이득이 얼마인지 계산하는 문제이다.
+ *
+ * 현재 자산이 프로젝트를 진행하기 위한 필요 자산보다 크거나 같아야 프로젝트를 진행할 수 있다.
+ *
+ * 1. 이득과 자산을 짝지어, 이득이 크고 필요 자산이 작은 순서가 되게끔 우선 순위 큐에 넣는다.
+ * 2. 우선 순위 큐를 순회한다.
+ * (우선 순위 큐에 프로젝트들이 없거나 프로젝트를 진행할 수 있는 횟수를 초과하지 않는 선에서 반복한다.)
+ * 3. 만약 현재까지의 자산(total)보다 해당 프로젝트에서 요구하는 필요 자산이 작거나 같다면,
+ * 해당 프로젝트의 이득을 현재까지의 자산에 추가하고 미처 포함시키지 못했던 프로젝트들을 다시 우선 순위 큐에 넣는다.
+ * 4. 만약 현재까지의 자산(total)보다 해당 프로젝트에서 요구하는 필요 자산이 크다면,
+ * 포함시키지 않도록 일시적으로 제외시킨다.(residue 이용)
+ * 5. 우선 순위 큐 순회 이후에 현재까지의 자산(total)을 반환한다.
+ */
+class Solution {
+    fun findMaximizedCapital(k: Int, w: Int, profits: IntArray, capital: IntArray): Int {
+        val heap = profits.indices
+            .mapTo(
+                destination = PriorityQueue<Int>(object : Comparator<Int> {
+                    override fun compare(o1: Int, o2: Int): Int {
+                        val compared = profits[o2].compareTo(profits[o1])
+
+                        return compared.takeIf { it != 0 } ?: run { capital[o1].compareTo(capital[o2]) }
+                    }
+                }),
+                transform = { it }
+            )
+        val residue = mutableListOf<Int>()
+        var total = w
+        var count = k
+
+        while (heap.isNotEmpty() && count > 0) {
+            if (capital[heap.peek()] <= total) {
+                total += profits[heap.poll()]
+                count--
+
+                heap.addAll(residue)
+                residue.clear()
+            } else {
+                residue.add(heap.poll())
+            }
+        }
+
+        return total
+    }
+}
+
+fun main() {
+    println(
+        Solution().findMaximizedCapital(
+            k = 2,
+            w = 0,
+            profits = intArrayOf(1, 2, 3),
+            capital = intArrayOf(0, 1, 1)
+        )
+    )
+    println(
+        Solution().findMaximizedCapital(
+            k = 3,
+            w = 0,
+            profits = intArrayOf(1, 2, 3),
+            capital = intArrayOf(0, 1, 2)
+        )
+    )
+}
