@@ -1,4 +1,4 @@
-import java.util.PriorityQueue
+import kotlin.math.*
 
 /**
  * # 2406. Divide Intervals Into Minimum Number of Groups
@@ -9,25 +9,29 @@ import java.util.PriorityQueue
  */
 class Solution {
     fun minGroups(intervals: Array<IntArray>): Int {
-        val sorted = intervals.sortedWith(compareBy { it[1] }).toMutableList()
-        val heap = PriorityQueue<Int>(compareByDescending<Int> { it })
-        val cache = mutableListOf<Int>()
+        var n = intervals[0][1]
+        val sorted = intervals.sortedWith(compareBy {
+            n = max(n, it[1])
+
+            it[1]
+        }).toMutableList()
+        val group = IntArray(n + 1)
 
         while (sorted.isNotEmpty()) {
-            if (heap.isNotEmpty() && sorted.first()[0] > heap.peek()) {
-                heap.poll()
-            } else if (heap.isNotEmpty()) {
-                cache.add(heap.poll())
+            val start = sorted.first()[0]
+            val end = sorted.first()[1]
+            val target = group.filterIndexed { index, _ -> index in 0..start - 1 }
+                .indexOfLast { count -> count > 0 }
 
-                continue
+            if (target > 0) {
+                group[target]--
             }
 
-            heap.add(sorted.removeAt(0)[1])
-            heap.addAll(cache)
-            cache.clear()
+            sorted.removeAt(0)
+            group[end]++
         }
 
-        return heap.size
+        return group.sum()
     }
 }
 
@@ -50,6 +54,20 @@ fun main() {
                 intArrayOf(5, 6),
                 intArrayOf(8, 10),
                 intArrayOf(11, 13)
+            )
+        )
+    )
+    println(
+        Solution().minGroups(
+            intervals = arrayOf<IntArray>(
+                intArrayOf(441459,446342),
+                intArrayOf(801308,840640),
+                intArrayOf(871890,963447),
+                intArrayOf(228525,336985),
+                intArrayOf(807945,946787),
+                intArrayOf(479815,507766),
+                intArrayOf(693292,944029),
+                intArrayOf(751962,821744)
             )
         )
     )
