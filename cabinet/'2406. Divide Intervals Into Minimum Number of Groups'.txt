@@ -4,34 +4,36 @@ import kotlin.math.*
  * # 2406. Divide Intervals Into Minimum Number of Groups
  * ##### Topics: Array, Two Pointers, Greedy, Sorting, Heap (Priority Queue), Prefix Sum
  * ##### Level: Medium
- * ##### Status: Time Limit Exceeded
+ * ##### Status: Accepted
  * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 시작과 끝이 있는 구간 배열이 주어지고 시작과 끝이 겹치지 않게 구간들을 최소한의 그룹으로 배치할 때,
+ * 그 그룹의 수를 구하는 문제이다.
+ *
+ * 1. 구간 배열(intervals)을 순회하면서 시작과 끝을 나눠 시작에는 1을 끝에는 -1 가중치를 부여하고,
+ * 시작점, 가중치 오름차순으로 정렬한다.
+ * 2. 정렬한 목록(list)을 순회하면서 가중치를 더한다.
+ * 3. 매번 가중치의 최댓값을 구한다.
+ * (이 값은 문제에서 요구하는 그룹의 수가 된다.)
  */
 class Solution {
     fun minGroups(intervals: Array<IntArray>): Int {
-        var n = intervals[0][1]
-        val sorted = intervals.sortedWith(compareBy {
-            n = max(n, it[1])
+        val list = intervals.flatMap { interval ->
+            listOf(
+                Pair<Int, Int>(interval[0], 1),
+                Pair<Int, Int>(interval[1] + 1, -1)
+            )
+        }.sortedWith(compareBy({ it.first }, { it.second }))
+        var count = 0
+        var groups = 0
 
-            it[1]
-        }).toMutableList()
-        val group = IntArray(n + 1)
-
-        while (sorted.isNotEmpty()) {
-            val start = sorted.first()[0]
-            val end = sorted.first()[1]
-            val target = group.filterIndexed { index, _ -> index in 0..start - 1 }
-                .indexOfLast { count -> count > 0 }
-
-            if (target > 0) {
-                group[target]--
-            }
-
-            sorted.removeAt(0)
-            group[end]++
+        list.forEach { (_, weight) ->
+            count += weight
+            groups = max(groups, count)
         }
 
-        return group.sum()
+        return groups
     }
 }
 
