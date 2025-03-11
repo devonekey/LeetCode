@@ -1,0 +1,40 @@
+import java.util.*
+
+/**
+ * # 659. Split Array into Consecutive Subsequences
+ * ##### Topics: Array, Hash Table, Greedy, Heap (Priority Queue)
+ * ##### Level: Medium
+ * ##### Status: Time Limit Exceeded
+ * ##### Language: Kotlin
+ */
+class Solution {
+    fun isPossible(nums: IntArray): Boolean {
+        val heap = PriorityQueue<Pair<Int, Int>>(
+            compareBy<Pair<Int, Int>> { (_, length) -> length }
+        )
+        val cache = mutableListOf<Pair<Int, Int>>()
+
+        nums.forEach { num ->
+            while (heap.isNotEmpty() && heap.peek().first + 1 != num) {
+                cache.add(heap.poll())
+            }
+
+            if (heap.isNotEmpty() && heap.peek().first + 1 == num) {
+                heap.add(num to heap.poll().second + 1)
+            } else {
+                heap.add(num to 1)
+            }
+
+            heap.addAll(cache)
+            cache.clear()
+        }
+
+        return heap.all { it.second >= 3 }
+    }
+}
+
+fun main() {
+    println(Solution().isPossible(nums = intArrayOf(1, 2, 3, 3, 4, 5)))
+    println(Solution().isPossible(nums = intArrayOf(1, 2, 3, 3, 4, 4, 5, 5)))
+    println(Solution().isPossible(nums = intArrayOf(1, 2, 3, 4, 4, 5)))
+}
