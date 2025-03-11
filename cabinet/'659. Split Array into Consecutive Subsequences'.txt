@@ -4,8 +4,24 @@ import java.util.*
  * # 659. Split Array into Consecutive Subsequences
  * ##### Topics: Array, Hash Table, Greedy, Heap (Priority Queue)
  * ##### Level: Medium
- * ##### Status: Time Limit Exceeded
+ * ##### Status: Accepted
  * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 오름차순으로 정렬된 수열이 주어질 때, 연속적으로 증가하는 부분 수열들의 길이가 모두 3 이상인지를 구하는 문제이다.
+ *
+ * 1. 현재 값과 수열의 길이를 가지는 우선 순위 큐(heap)를 준비한다.
+ * (수열의 길이를 기준으로 오름차순 정렬한다.)
+ * 2. 수열을 순회한다.
+ * 3. 우선 순위 큐가 비어있거나 큐에서 가리키는 수(peek().first) + 1이
+ * num과 일치할 때까지 우선 순위 큐를 순회한다.
+ * 4. 만약 큐에서 가리키는 수가 num과 일치하면, 큐에서 꺼내(poll()) 임시 저장(cache)하고 반복한다.
+ * 5. 만약 큐에서 가리키는 수가 num과 일치하지 않고 길이(peek().second)가 3이상이라면,
+ * 문제에서 요구하는 조건이므로 큐에서 제외시킨다.
+ * 6. 그 외의 경우라면, 문제에서 요구하는 조건에 부합하지 않으므로 false를 반환하고 종료한다.
+ * 7. 우선 순위 큐 순회 이후, 큐에 수와 길이를 넣는다.(add())
+ * 8. 임시 저장한 내용들을 큐에 모두 넣는다.(addAll())
+ * 9. 최종적으로 큐에 있는 모든 길이들이 3 이상인지 확인하여 정답을 구한다.
  */
 class Solution {
     fun isPossible(nums: IntArray): Boolean {
@@ -16,15 +32,19 @@ class Solution {
 
         nums.forEach { num ->
             while (heap.isNotEmpty() && heap.peek().first + 1 != num) {
-                cache.add(heap.poll())
+                when {
+                    heap.peek().first == num -> cache.add(heap.poll())
+                    heap.peek().second >= 3 -> heap.poll()
+                    else -> return false
+                }
             }
 
-            if (heap.isNotEmpty() && heap.peek().first + 1 == num) {
-                heap.add(num to heap.poll().second + 1)
-            } else {
-                heap.add(num to 1)
-            }
+            val length = heap.takeIf { it.isNotEmpty() && it.peek().first + 1 == num }
+                ?.poll()
+                ?.let { it.second + 1 }
+                ?: 1
 
+            heap.add(num to length)
             heap.addAll(cache)
             cache.clear()
         }
@@ -37,4 +57,5 @@ fun main() {
     println(Solution().isPossible(nums = intArrayOf(1, 2, 3, 3, 4, 5)))
     println(Solution().isPossible(nums = intArrayOf(1, 2, 3, 3, 4, 4, 5, 5)))
     println(Solution().isPossible(nums = intArrayOf(1, 2, 3, 4, 4, 5)))
+    println(Solution().isPossible(nums = intArrayOf(1, 2, 3, 5, 5, 6, 7)))
 }
