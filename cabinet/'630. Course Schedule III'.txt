@@ -1,0 +1,58 @@
+import java.util.*
+
+/**
+ * # 630. Course Schedule III
+ * ##### Topics: Array, Greedy, Sorting, Heap (Priority Queue)
+ * ##### Level: Hard
+ * ##### Status: Wrong Answer
+ * ##### Language: Kotlin
+ */
+class Solution {
+    fun scheduleCourse(courses: Array<IntArray>): Int {
+        val heap = PriorityQueue<IntArray>(compareBy<IntArray>({ it[1] }, { it[0] })).apply {
+            addAll(courses)
+        }
+        var lastDay = 0
+
+        while (heap.isNotEmpty() && heap.peek()[1] >= heap.peek()[0] + lastDay) {
+            lastDay += heap.poll()[0]
+        }
+
+        return courses.size - heap.size
+    }
+}
+
+fun main() {
+    println(
+        Solution().scheduleCourse(
+            courses = arrayOf(
+                intArrayOf(100, 200),
+                intArrayOf(200, 1300),
+                intArrayOf(1000, 1250),
+                intArrayOf(2000, 3200),
+            )
+        )
+    )
+    println(
+        Solution().scheduleCourse(
+            courses = arrayOf(intArrayOf(1, 2))
+        )
+    )
+    println(
+        Solution().scheduleCourse(
+            courses = arrayOf(
+                intArrayOf(3, 2),
+                intArrayOf(4, 3)
+            )
+        )
+    )
+    println(
+        Solution().scheduleCourse(
+            courses = arrayOf(
+                intArrayOf(5, 5),
+                intArrayOf(4, 6),
+                intArrayOf(2, 6)
+            )
+        )
+    )
+}
