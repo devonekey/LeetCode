@@ -1,0 +1,47 @@
+import java.util.*
+
+/**
+ * # 493. Reverse Pairs
+ * ##### Topics: Array, Binary Search, Divide and Conquer, Binary Indexed Tree, Segment Tree, Merge Sort, Ordered Set
+ * ##### Level: Hard
+ * ##### Status: Time Limit Exceeded
+ * ##### Language: Kotlin
+ */
+class Solution {
+    fun reversePairs(nums: IntArray): Int {
+        val queue = PriorityQueue<Int>(compareBy<Int> { nums[it] })
+        val cache = mutableListOf<Int>()
+        var count = 0
+
+        nums.forEachIndexed { index, num ->
+            while (queue.isNotEmpty() && nums[queue.peek()] <= 2.toLong() * num) {
+                cache.add(queue.poll()!!)
+            }
+
+            count += queue.size
+
+            queue.add(index)
+            queue.addAll(cache)
+            cache.clear()
+        }
+
+        return count
+    }
+}
+
+fun main() {
+    println(Solution().reversePairs(nums = intArrayOf(1, 3, 2, 3, 1)))
+    println(Solution().reversePairs(nums = intArrayOf(2, 4, 3, 5, 1)))
+    println(
+        Solution().reversePairs(
+            nums = intArrayOf(
+                2147483647,
+                2147483647,
+                2147483647,
+                2147483647,
+                2147483647,
+                2147483647
+            )
+        )
+    )
+}
