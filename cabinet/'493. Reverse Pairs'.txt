@@ -9,19 +9,30 @@ import java.util.*
  */
 class Solution {
     fun reversePairs(nums: IntArray): Int {
-        val queue = PriorityQueue<Int>(compareBy<Int> { nums[it] })
+        val deque = ArrayDeque<Int>(
+            nums.indices
+                .sortedWith(comparator = object : Comparator<Int> {
+                    override fun compare(o1: Int, o2: Int): Int =
+                        nums[o1].compareTo(nums[o2])
+                            .takeIf { it != 0 }
+                            ?: o2.compareTo(o1)
+                })
+        )
         val cache = mutableListOf<Int>()
         var count = 0
 
-        nums.forEachIndexed { index, num ->
-            while (queue.isNotEmpty() && nums[queue.peek()] <= 2.toLong() * num) {
-                cache.add(queue.poll()!!)
+        while (deque.isNotEmpty()) {
+            val j = deque.removeFirst()
+
+            while (deque.isNotEmpty() && nums[deque.last()] > 2.toLong() * nums[j]) {
+                if (deque.last() < j) {
+                    count++
+                }
+
+                cache.add(deque.removeLast())
             }
 
-            count += queue.size
-
-            queue.add(index)
-            queue.addAll(cache)
+            deque.addAll(cache.reversed())
             cache.clear()
         }
 
@@ -44,4 +55,6 @@ fun main() {
             )
         )
     )
+    println(Solution().reversePairs(nums = intArrayOf(5, 4, 3, 2, 1)))
+    println(Solution().reversePairs(nums = intArrayOf(-5, -5)))
 }
