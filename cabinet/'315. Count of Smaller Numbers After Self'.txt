@@ -1,0 +1,69 @@
+import java.util.*
+
+/**
+ * # 315. Count of Smaller Numbers After Self
+ * ##### Topics: Array, Binary Search, Divide and Conquer, Binary Indexed Tree, Segment Tree, Merge Sort, Ordered Set
+ * ##### Level: Hard
+ * ##### Status: Time Limit Exceeded
+ * ##### Language: Kotlin
+ */
+class Solution {
+    fun countSmaller(nums: IntArray): List<Int> {
+        val treeSet = TreeSet<Pair<Int, Int>>(
+            object : Comparator<Pair<Int, Int>> {
+                override fun compare(o1: Pair<Int, Int>, o2: Pair<Int, Int>): Int =
+                    o1.first.compareTo(o2.first)
+                        .takeIf { it != 0 }
+                        ?: o2.second.compareTo(o1.second)
+            }
+        )
+        val cache = mutableListOf<Pair<Int, Int>>()
+        var answer = IntArray(nums.size) { 0 }
+
+        nums.reversed()
+            .forEachIndexed { index, num ->
+                val pair = num to index
+
+                while (treeSet.isNotEmpty() && treeSet.lower(pair) != null) {
+                    val lower = treeSet.lower(pair)!!
+
+                    treeSet.remove(lower)
+                    cache.add(lower)
+                    answer[index]++
+                }
+
+                treeSet.add(pair)
+                treeSet.addAll(cache)
+                cache.clear()
+            }
+
+        return answer.reversed()
+    }
+}
+
+fun main() {
+    println(
+        Solution().countSmaller(nums = intArrayOf(5, 2, 6, 1))
+            .joinToString(
+                separator = ", ",
+                prefix = "[",
+                postfix = "]"
+            )
+    )
+    println(
+        Solution().countSmaller(nums = intArrayOf(-1))
+            .joinToString(
+                separator = ", ",
+                prefix = "[",
+                postfix = "]"
+            )
+    )
+    println(
+        Solution().countSmaller(nums = intArrayOf(-1, -1))
+            .joinToString(
+                separator = ", ",
+                prefix = "[",
+                postfix = "]"
+            )
+    )
+}
