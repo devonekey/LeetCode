@@ -1,4 +1,5 @@
 import java.util.*
+import kotlin.math.*
 
 /**
  * # 630. Course Schedule III
@@ -9,16 +10,45 @@ import java.util.*
  */
 class Solution {
     fun scheduleCourse(courses: Array<IntArray>): Int {
-        val heap = PriorityQueue<IntArray>(compareBy<IntArray>({ it[1] }, { it[0] })).apply {
+        val heap = PriorityQueue<IntArray>(object : Comparator<IntArray> {
+            override fun compare(o1: IntArray, o2: IntArray): Int =
+                (o2[1] - o2[0]).compareTo(o1[1] - o1[0]).takeIf { it != 0 }
+                    ?: o2[1].compareTo(o1[1]).takeIf { it != 0 }
+                    ?: o1[0].compareTo(o2[0])
+        }).apply {
             addAll(courses)
         }
-        var lastDay = 0
+        var firstDay = 0
+        var lastDay = courses.maxBy { course -> course[1] }!![1]
+        val cache = mutableListOf<IntArray>()
+        var count = 0
 
-        while (heap.isNotEmpty() && heap.peek()[1] >= heap.peek()[0] + lastDay) {
-            lastDay += heap.poll()[0]
+        while (heap.isNotEmpty()) {
+            val course = heap.poll()
+
+            if (course[1] < lastDay && firstDay + course[0] <= course[1]) {
+                firstDay += course[0]
+                count += 1
+
+                continue
+            }
+
+            lastDay = min(lastDay, course[1])
+
+            if (lastDay - course[0] >= firstDay) {
+                lastDay -= course[0]
+                count += 1
+            }
+
+            while (heap.isNotEmpty() && heap.peek()[1] > lastDay) {
+                cache.add(heap.poll().apply { this[1] = lastDay })
+            }
+
+            heap.addAll(cache)
+            cache.clear()
         }
 
-        return courses.size - heap.size
+        return count
     }
 }
 
@@ -52,6 +82,36 @@ fun main() {
                 intArrayOf(5, 5),
                 intArrayOf(4, 6),
                 intArrayOf(2, 6)
+            )
+        )
+    )
+    println(
+        Solution().scheduleCourse(
+            courses = arrayOf(
+                intArrayOf(5, 15),
+                intArrayOf(3, 19),
+                intArrayOf(6, 7),
+                intArrayOf(2, 10),
+                intArrayOf(5, 16),
+                intArrayOf(8, 14),
+                intArrayOf(10, 11),
+                intArrayOf(2, 19)
+            )
+        )
+    )
+    println(
+        Solution().scheduleCourse(
+            courses = arrayOf(
+                intArrayOf(7,16),
+                intArrayOf(2,3),
+                intArrayOf(3,12),
+                intArrayOf(3,14),
+                intArrayOf(10,19),
+                intArrayOf(10,16),
+                intArrayOf(6,8),
+                intArrayOf(6,11),
+                intArrayOf(3,13),
+                intArrayOf(6,16)
             )
         )
     )
