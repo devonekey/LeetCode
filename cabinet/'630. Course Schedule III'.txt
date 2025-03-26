@@ -1,5 +1,4 @@
 import java.util.*
-import kotlin.math.*
 
 /**
  * # 630. Course Schedule III
@@ -7,48 +6,40 @@ import kotlin.math.*
  * ##### Level: Hard
  * ##### Status: Wrong Answer
  * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 강의 기간과 종강일이 배열로 주어질 때, 최대한 많이 수강할 수 있는 강의 수를 구하는 문제이다.
+ *
+ * 현재까지 수집한 강의들 중에서 강의 기간이 긴 강의를 제외하고 짧은 강의들을 추가하는 것이 이 문제의 핵심이다.
+ *
+ * 1. 배열(courses)을 종강일 기준으로 정렬하여 순회한다.
+ * 2. 만약 현재 강의를 추가하려 할 때 종강일을 넘어선다면,
+ * 수집한 강의(heap) 중에 현재 강의 기간보다 더 강의를 하나 제외한다.
+ * 3. 제외 후, 더 짧은 강의 기간을 수집한다.
+ * 4. 현재까지 수집한 강의 수를 반환한다.
  */
 class Solution {
     fun scheduleCourse(courses: Array<IntArray>): Int {
-        val heap = PriorityQueue<IntArray>(object : Comparator<IntArray> {
-            override fun compare(o1: IntArray, o2: IntArray): Int =
-                (o2[1] - o2[0]).compareTo(o1[1] - o1[0]).takeIf { it != 0 }
-                    ?: o2[1].compareTo(o1[1]).takeIf { it != 0 }
-                    ?: o1[0].compareTo(o2[0])
-        }).apply {
-            addAll(courses)
-        }
+        val heap = PriorityQueue<IntArray>(compareByDescending<IntArray> { it[0] })
         var firstDay = 0
-        var lastDay = courses.maxBy { course -> course[1] }!![1]
-        val cache = mutableListOf<IntArray>()
-        var count = 0
 
-        while (heap.isNotEmpty()) {
-            val course = heap.poll()
+        courses.sortedWith(compareBy<IntArray> { it[1] })
+            .forEach { course ->
+                if (heap.isNotEmpty() &&
+                    firstDay + course[0] > course[1] &&
+                    heap.peek()[0] > course[0]
+                ) {
+                    firstDay -= heap.poll()[0]
+                }
 
-            if (course[1] < lastDay && firstDay + course[0] <= course[1]) {
-                firstDay += course[0]
-                count += 1
+                if (firstDay + course[0] <= course[1]) {
+                    firstDay += course[0]
 
-                continue
+                    heap.add(course)
+                }
             }
 
-            lastDay = min(lastDay, course[1])
-
-            if (lastDay - course[0] >= firstDay) {
-                lastDay -= course[0]
-                count += 1
-            }
-
-            while (heap.isNotEmpty() && heap.peek()[1] > lastDay) {
-                cache.add(heap.poll().apply { this[1] = lastDay })
-            }
-
-            heap.addAll(cache)
-            cache.clear()
-        }
-
-        return count
+        return heap.size
     }
 }
 
@@ -112,6 +103,19 @@ fun main() {
                 intArrayOf(6,11),
                 intArrayOf(3,13),
                 intArrayOf(6,16)
+            )
+        )
+    )
+    println(
+        Solution().scheduleCourse(
+            courses = arrayOf(
+                intArrayOf(7,17),
+                intArrayOf(3,12),
+                intArrayOf(10, 20),
+                intArrayOf(9,10),
+                intArrayOf(5,20),
+                intArrayOf(10,19),
+                intArrayOf(4,18)
             )
         )
     )
