@@ -1,42 +1,72 @@
-import java.util.*
-
 /**
  * # 493. Reverse Pairs
  * ##### Topics: Array, Binary Search, Divide and Conquer, Binary Indexed Tree, Segment Tree, Merge Sort, Ordered Set
  * ##### Level: Hard
- * ##### Status: Time Limit Exceeded
+ * ##### Status: Accepted
  * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 주어진 수열(nums)에서, 임의의 두 위치 i, j가 아래 조건을 만족하는 쌍의 개수(count)를 구하는 문제이다.
+ *
+ * * 0 <= i < j < nums.size
+ * * nums[[i]] > 2 * nums[[j]]
+ *
+ * 1. 주어진 수열(nums)에 병합 정렬 알고리즘을 적용한다.
+ * 2. 병합 단계에서, 왼쪽 수열을 순회한다.
+ * 3. 왼쪽 수열의 특정 수 기준으로 오른쪽 수열을 순회하며 조건들을 만족하는지 확인한다.
+ * 4. 조건에 부합하면, 현재 위치를 조정한다.
+ * 5. 조정한만큼 쌍의 개수(count)를 추가 증가시킨다.
+ * 6. 정렬한다.
  */
 class Solution {
+    var count = 0
+
     fun reversePairs(nums: IntArray): Int {
-        val deque = ArrayDeque<Int>(
-            nums.indices
-                .sortedWith(comparator = object : Comparator<Int> {
-                    override fun compare(o1: Int, o2: Int): Int =
-                        nums[o1].compareTo(nums[o2])
-                            .takeIf { it != 0 }
-                            ?: o2.compareTo(o1)
-                })
-        )
-        val cache = mutableListOf<Int>()
-        var count = 0
-
-        while (deque.isNotEmpty()) {
-            val j = deque.removeFirst()
-
-            while (deque.isNotEmpty() && nums[deque.last()] > 2.toLong() * nums[j]) {
-                if (deque.last() < j) {
-                    count++
-                }
-
-                cache.add(deque.removeLast())
-            }
-
-            deque.addAll(cache.reversed())
-            cache.clear()
-        }
+        mergeSort(arr = nums, temp = IntArray(nums.size), start = 0, end = nums.lastIndex)
 
         return count
+    }
+
+    fun mergeSort(arr: IntArray, temp: IntArray, start: Int, end: Int) {
+        if (start >= end) {
+            return
+        }
+
+        val mid = (start + end) / 2
+
+        mergeSort(arr = arr, temp = temp, start = start, end = mid)
+        mergeSort(arr = arr, temp = temp, start = mid + 1, end = end)
+        merge(arr = arr, temp = temp, start = start, mid = mid, end = end)
+    }
+
+    fun merge(arr: IntArray, temp: IntArray, start: Int, mid: Int, end: Int) {
+        var curIdx = mid + 1;
+
+        for (i in start..mid) {
+            while (curIdx <= end && arr[i] > 2L * arr[curIdx]) {
+                curIdx++
+            }
+
+            count += curIdx - (mid + 1)
+        }
+
+        var i = start; var l = start; var r = mid + 1
+
+        while (l <= mid && r <= end) {
+            temp[i++] = if (arr[l] <= arr[r]) { arr[l++] } else { arr[r++] }
+        }
+
+        while (l <= mid) {
+            temp[i++] = arr[l++]
+        }
+
+        while (r <= end) {
+            temp[i++] = arr[r++]
+        }
+
+        for (i in start..end) {
+            arr[i] = temp[i]
+        }
     }
 }
 
