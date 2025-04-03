@@ -1,0 +1,104 @@
+import java.util.*
+
+/**
+ * # 3161. Block Placement Queries
+ * ##### Topics: Array, Binary Search, Binary Indexed Tree, Segment Tree
+ * ##### Level: Hard
+ * ##### Status: Time Limit Exceeded
+ * ##### Language: Kotlin
+ */
+class Solution {
+    fun getResults(queries: Array<IntArray>): List<Boolean> {
+        val tree = TreeSet<Int>()
+        val resultList = mutableListOf<Boolean>()
+
+        queries.forEach { query ->
+            val type = query[0]
+            val x = query[1]
+
+            if (type == 1) {
+                tree.add(x)
+
+                return@forEach
+            }
+
+            val size = query[2]
+            val subList = tree.headSet(x).toMutableList()
+            var prevX = x
+
+            run {
+                subList.apply { add(0) }
+                    .sortedDescending()
+                    .forEach {
+                        if (prevX - it >= size) {
+                            resultList.add(true)
+
+                            return@run
+                        }
+
+                        prevX = it
+                    }
+                resultList.add(false)
+            }
+        }
+
+        return resultList
+    }
+}
+
+fun main() {
+    println(
+        Solution().getResults(
+            queries = arrayOf(
+                intArrayOf(1, 2),
+                intArrayOf(2, 3, 3),
+                intArrayOf(2, 3, 1),
+                intArrayOf(2, 2, 2)
+            )
+        )
+    )
+    println(
+        Solution().getResults(
+            queries = arrayOf(
+                intArrayOf(1, 7),
+                intArrayOf(2, 7, 6),
+                intArrayOf(1, 2),
+                intArrayOf(2, 7, 5),
+                intArrayOf(2, 7, 6)
+            )
+        )
+    )
+    println(
+        Solution().getResults(
+            queries = arrayOf(
+                intArrayOf(2, 1, 1)
+            )
+        )
+    )
+    println(
+        Solution().getResults(
+            queries = arrayOf(
+                intArrayOf(1, 1),
+                intArrayOf(2, 4, 3)
+            )
+        )
+    )
+    println(
+        Solution().getResults(
+            queries = arrayOf(
+                intArrayOf(1, 4),
+                intArrayOf(2, 1, 2)
+            )
+        )
+    )
+    println(
+        Solution().getResults(
+            queries = arrayOf(
+                intArrayOf(1, 8),
+                intArrayOf(1, 4),
+                intArrayOf(2, 3, 6),
+                intArrayOf(2, 7, 5)
+            )
+        )
+    )
+}
