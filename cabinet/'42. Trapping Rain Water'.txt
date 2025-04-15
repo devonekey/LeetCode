@@ -1,4 +1,6 @@
 import utils.*
+import java.util.*
+import kotlin.math.*
 
 /**
  * # 42. Trapping Rain Water
@@ -11,41 +13,33 @@ import utils.*
  * 높이를 나타내는 숫자 배열이 주어지고 비가 와서 물이 고인다고 가장할 때,
  * 고여있는 물의 양을 반환하는 문제이다.
  *
- * 1. 각 높이를 순회하면서 가장 높은 수의 위치를 기억한다.
- * 2. 만약 현재 위치의 높이가 가장 높은 수보다 크거나 같다면, 현재 위치의 높이부터 가장 높은 수의 위치까지 순회하면서
- * 가장 높은 수의 차를 구하여 고여있는 물의 양을 계산한다.
- * 3. 만약 현재 위치의 높이가 가장 높은 수보다 작다면, 현재 위치의 높이부터 가장 높은 수의 위치까지
- * 자세히는 현재 위치의 높이보다 큰 수를 만날 때까지 순회하면서
- * 현재 위치의 높이 차를 구하여 고여있는 물의 양을 계산한다.
- * 4. 이 경우에는 물이 채워졌으므로 물의 높이로 높이를 조정한다.
- * 5. 위 과정을 모든 높이를 순회할 때까지 반복한다.
+ * 1. 각 높이(height)를 순회한다.
+ * 2. 단조 스택(stack)을 순회한다.
+ * 3. 만약 stack이 가리키는 위치의 높이가 현재 높이보다 낮다면, stack에서 꺼낸다.
+ * stack에서 꺼낸 위치는 물을 넣을 바닥이 된다.
+ * 4. 현재 높이와 stack이 새롭게 가리키는 위치의 높이 중에 낮은 높이로 바닥까지 높이 차를 구하고,
+ * 현재 위치와 stack이 가리키는 위치 차를 곱해 고여있는 물의 양을 계산한다.
+ * 5. stack에 현재 위치를 넣는다.
  */
 class Solution {
     fun trap(height: IntArray): Int {
         var trapped = 0
-        var highestIndex = -1
+        val stack = Stack<Int>()
 
         height.forEachIndexed { index, h ->
-            when {
-                highestIndex == -1 -> highestIndex = index
-                h >= height[highestIndex] -> {
-                    (index - 1 downTo highestIndex + 1).forEach {
-                        trapped += height[highestIndex] - height[it]
-                    }
+            while (stack.isNotEmpty() && height[stack.peek()] < h) {
+                val lowestIndex = stack.pop()
 
-                    highestIndex = index
+                if (stack.isEmpty()) {
+                    break
                 }
-                else -> {
-                    (index - 1 downTo highestIndex + 1).forEach {
-                        if (h <= height[it]) {
-                            return@forEachIndexed
-                        }
 
-                        trapped += h - height[it]
-                        height[it] = h
-                    }
-                }
+                val peekedIndex = stack.peek()
+
+                trapped += (index - peekedIndex - 1) * (min(height[peekedIndex], h) - height[lowestIndex])
             }
+
+            stack.add(index)
         }
 
         return trapped
