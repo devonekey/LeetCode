@@ -1,4 +1,5 @@
 import utils.*
+import java.util.*
 
 /**
  * # 2866. Beautiful Towers II
@@ -12,44 +13,60 @@ import utils.*
  *
  * 그 그래프 내에서 극댓값이 하나인 그래프를 만들 때 가질 수 있는 최대 면적을 계산하는 문제이다.
  *
- * 1. 높이를 나타내는 숫자 배열을 순회한다.
- * 2. 현재 높이를 극댓값으로 삼는다.
- * 3. 현재 위치의 왼쪽 방향으로 순회하면서 이전 위치의 높이를 넘어서지 않는 높이를 채택하여 면적을 구한다.
- * 4. 현재 높이의 면적을 추가한다.
- * 5. 현재 위치의 오른쪽 방향으로 순회하면서 이전 위치의 높이를 넘어서지 않는 높이를 채택하여 면적을 구한다.
- * 6. 계산한 면적을 현재 위치를 기반으로 sumList에 저장한다.
- * 7. 모두 순회하고 sumList 중에 가장 큰 면적을 반환한다.
+ * 1. 정방향으로 순회한다.
+ * 2. 현재 위치의 높이가 stack의 최상위가 가리키는 위치의 높이보다 낮다면, stack에서 하나 꺼내 버린다.
+ * 3. stack에 위치 정보가 없거나 현재 위치의 높이가 stack의 최상위가 가리키는 위치의 높이보다 높을 때까지 반복한다.
+ * 4. 반복 이후, stack이 비어있다면 현재 위치와 현재 위치의 높이를 곱하여 현재 위치의 면적을 계산한다.
+ * 5. stack이 비어있지 않다면 현재 위치와 stack의 최상위가 가리키는 위치 차를 현재 위치의 높이와 곱해주고,
+ * 이를 stack의 최상위가 가리키는 위치의 면적과 더하여 현재 위치의 면적을 계산한다.
+ * 6. 현재 위치를 stack에 넣고 반복한다.
+ * 7. 위 로직은 우측 위치의 높이가 항상 좌측 위치의 높이보다 높기 때문에,
+ * 각 위치에서 구한 면적은 해당 높이가 극댓값일 때의 면적이 된다.
+ * 8. 역방향으로도 순회하면서 좌측 위치의 높이가 항상 우측 위치의 높이보다 높게 만들고 각 위치에서의 면적을 계산한다.
+ * 9. 정방향, 역방향으로 순회했을 때 계산한 면적을 더하고 각 위치의 높이만큼 뺀 결과를 바탕으로 최댓값을 찾아 반환한다.
  *
- * 해당 풀이는 O(N^2)의 성능으로 최적의 성능에 비해 비효율적이다.
+ * 해당 풀이는 O(N)의 성능을 지닌다.
  */
 class Solution {
     fun maximumSumOfHeights(maxHeights: List<Int>): Long {
-        val sumList = MutableList<Long>(maxHeights.size) { 0L }
+        val lastIndex = maxHeights.lastIndex
+        val nIndices = Stack<Int>()
+        val pIndices = Stack<Int>()
+        val nSumList = MutableList<Long>(maxHeights.size) { 0L }
+        val pSumList = MutableList<Long>(maxHeights.size) { 0L }
 
         maxHeights.forEachIndexed { index, height ->
-            var lHeight = height
-            var rHeight = height
-
-            (index - 1 downTo 0).forEach {
-                if (maxHeights[it] < lHeight) {
-                    lHeight = maxHeights[it]
-                }
-
-                sumList[index] = sumList[index] + lHeight
+            while (nIndices.isNotEmpty() && height < maxHeights[nIndices.peek()]) {
+                nIndices.pop()
             }
 
-            sumList[index] = sumList[index] + height
-
-            ((index + 1)..maxHeights.lastIndex).forEach {
-                if (maxHeights[it] < rHeight) {
-                    rHeight = maxHeights[it]
-                }
-
-                sumList[index] = sumList[index] + rHeight
+            nSumList[index] = if (nIndices.isEmpty()) {
+                (index + 1) * height.toLong()
+            } else {
+                nSumList[nIndices.peek()] + (index - nIndices.peek()) * height.toLong()
             }
+
+            nIndices.push(index)
+        }
+        (lastIndex downTo 0).forEach { index ->
+            val height = maxHeights[index]
+
+            while (pIndices.isNotEmpty() && height < maxHeights[pIndices.peek()]) {
+                pIndices.pop()
+            }
+
+            pSumList[index] = if (pIndices.isEmpty()) {
+                (lastIndex - index + 1) * height.toLong()
+            } else {
+                (pIndices.peek() - index) * height.toLong() + pSumList[pIndices.peek()]
+            }
+
+            pIndices.push(index)
         }
 
-        return sumList.max() ?: 0
+        return nSumList
+            .mapIndexed { index, nSum -> nSum + pSumList[index] - maxHeights[index] }
+            .max() ?: 0L
     }
 }
 
@@ -60,4 +77,8 @@ fun main() {
         .runTestcase(expected = 22)
     Solution().maximumSumOfHeights(maxHeights = listOf(3, 2, 5, 5, 2, 3))
         .runTestcase(expected = 18)
+    Solution().maximumSumOfHeights(listOf(1, 1, 5, 6, 2, 2, 3))
+        .runTestcase(expected = 19)
+    Solution().maximumSumOfHeights(listOf(6, 5, 3, 4, 6, 1, 2, 3, 2, 5))
+        .runTestcase(expected = 25)
 }
