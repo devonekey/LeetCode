@@ -1,5 +1,5 @@
 import utils.*
-import kotlin.math.*
+import java.util.*
 
 /**
  * # 2104. Sum of Subarray Ranges
@@ -11,26 +11,73 @@ import kotlin.math.*
  *
  * 주어진 숫자 배열에서 부분 배열들을 구해 최댓값과 최솟값의 차들의 합을 계산하는 문제이다.
  *
- * 1. 숫자 배열을 이중으로 순회하면서 각 숫자를 만날 때마다 최댓값, 최솟값을 구하여 합산한다.
+ * 1. 수열을 순회한다.
+ * 2. 현재 수가 stack이 가리키는 위치의 수보다 크거나 같으면,
+ * stack이 가리키는 위치의 수가 이후의 현재 이후의 수들로부터 최댓값이 아니게 되므로,
+ * stack에서 위치를 꺼내 부분 수열의 갯수를 계산한다.
+ * 3. 순회 이후, stack을 비우면서 부분 수열의 갯수를 계산한다.
+ * 4. 수열을 다시 순회한다.
+ * 5. 현재 수가 stack이 가리키는 위치의 수보다 작거나 같으면,
+ * stack이 가리키는 위치의 수가 이후의 현재 이후의 수들로부터 최솟값이 아니게 되므로,
+ * stack에서 위치를 꺼내 부분 수열의 갯수를 계산한다.
+ * 6. 순회 이후, stack을 비우면서 부분 수열의 갯수를 계산한다.
+ * 7. 각 위치의 부분 수열 갯수와 각 위치의 최댓값을 곱하고 모두 더한 값과
+ * 각 위치의 부분 수열 갯수와 각 위치의 최솟값을 곱하고 모두 더한 값의 차를 구하고 반환한다.
  *
- * O(N^2)의 성능으로 최적의 성능은 아니다.
+ * 해당 풀이는 O(N)의 성능을 지닌다.
  */
 class Solution {
     fun subArrayRanges(nums: IntArray): Long {
-        var sum = 0L
+        val stack = Stack<Int>()
+        val greater = IntArray(nums.size) { 0 }
+        val less = IntArray(nums.size) { 0 }
 
-        (0 until nums.lastIndex).forEach { i ->
-            var maxNum = nums[i].toLong()
-            var minNum = nums[i].toLong()
+        nums.forEachIndexed { index, num ->
+            while (stack.isNotEmpty() && nums[stack.peek()] <= num) {
+                val popped = stack.pop()
+                greater[popped] = (index - popped) * if (stack.isNotEmpty()) {
+                    popped - stack.peek()
+                } else {
+                    popped + 1
+                }
+            }
 
-            ((i + 1)..nums.lastIndex).forEach { j ->
-                maxNum = max(maxNum, nums[j].toLong())
-                minNum = min(minNum, nums[j].toLong())
-                sum += maxNum - minNum
+            stack.add(index)
+        }
+
+        while (stack.isNotEmpty()) {
+            val popped = stack.pop()
+            greater[popped] = (nums.size - popped) * if (stack.isNotEmpty()) {
+                popped - stack.peek()
+            } else {
+                popped + 1
             }
         }
 
-        return sum
+        nums.forEachIndexed { index, num ->
+            while (stack.isNotEmpty() && nums[stack.peek()] >= num) {
+                val popped = stack.pop()
+                less[popped] = (index - popped) * if (stack.isNotEmpty()) {
+                    popped - stack.peek()
+                } else {
+                    popped + 1
+                }
+            }
+
+            stack.add(index)
+        }
+
+        while (stack.isNotEmpty()) {
+            val popped = stack.pop()
+            less[popped] = (nums.size - popped) * if (stack.isNotEmpty()) {
+                popped - stack.peek()
+            } else {
+                popped + 1
+            }
+        }
+
+        return greater.mapIndexed { index, frequency -> nums[index].toLong() * frequency }.sum() -
+                less.mapIndexed { index, frequency -> nums[index].toLong() * frequency }.sum()
     }
 }
 
