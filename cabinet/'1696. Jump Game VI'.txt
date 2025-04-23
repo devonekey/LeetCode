@@ -12,29 +12,38 @@ import java.util.*
  * 주어진 수열에서 k만큼 건너뛰기가 허용될 때, 수열 요소들 합의 최댓값을 구하는 문제다.
  *
  * 1. 주어진 수열(nums)을 순회한다.
- * 2. 우선 순위 큐(queue)를 순회하며 queue가 가리키는 위치와 현재 위치(index) 차가 k를 벗어나면 제거한다.
- * 3. queue가 가리키는 위치의 값을 더하여 nums에 기록한다.
- * 4. queue에 index를 추가한다.
- * 5. nums 마지막까지 순회하고 num의 마지막 수가 가리키는 값을 반환한다.
+ * 2. 덱(deque)이 가리키는 위치와 현재 위치(index) 차가 k를 벗어나면 제거한다.
+ * 3. deque이 가리키는 위치의 값과 현재 값을 더하여 현재 위치의 최대 값을 기록하는 수열(maximums)에 기록한다.
+ * 4. deque을 순회하며 maximums의 index가 가리키는 값이 deque에서 가리키는 마지막 위치의 값보다 크거나 같다면,
+ * 제거하여 deque이 가리키는 값이 항상 최상의 값을 가지도록 만든다.
+ * 5. deque에 현재 위치를 추가한다.
+ * 6. nums 마지막까지 순회하고 maximums의 마지막 값을 반환한다.
  *
- * 해당 풀이는 O(N Log K)의 성능으로, 최적의 성능은 아니다.
+ * 해당 풀이는 O(N)의 성능을 지닌다.
  */
 class Solution {
     fun maxResult(nums: IntArray, k: Int): Int {
-        val queue = PriorityQueue<Int>(compareByDescending<Int> { nums[it] })
+        val deque = ArrayDeque<Int>()
+        val maximums = IntArray(nums.size) { 0 }
+        maximums[0] = nums[0]
 
-        queue.add(0)
-        (1..nums.lastIndex).forEach { index ->
-            while (queue.isNotEmpty() && index - queue.peek() > k) {
-                queue.poll()
+        deque.add(0)
+
+        for (index in 1..nums.lastIndex) {
+            if (index - k > deque.first()) {
+                deque.removeFirst()
             }
 
-            nums[index] += nums[queue.peek()]
+            maximums[index] = maximums[deque.first()] + nums[index]
 
-            queue.add(index)
+            while (deque.isNotEmpty() && maximums[deque.last()] <= maximums[index]) {
+                deque.removeLast()
+            }
+
+            deque.addLast(index)
         }
 
-        return nums.last()
+        return maximums.last()
     }
 }
 
