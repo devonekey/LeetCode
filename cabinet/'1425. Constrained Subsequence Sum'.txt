@@ -1,0 +1,60 @@
+import utils.*
+import java.util.*
+
+/**
+ * # 1425. Constrained Subsequence Sum
+ * ##### Topics: Array, Dynamic Programming, Queue, Sliding Window, Heap (Priority Queue), Monotonic Queue
+ * ##### Level: Hard
+ * ##### Status: Accepted
+ * ##### Language: Kotlin
+ * ##### Explanation
+ *
+ * 주어진 수열에서 k만큼 건너뛰기가 허용될 때, 부분 수열들의 합 중에 최댓값을 구하는 문제다.
+ *
+ * 1. 주어진 수열(nums)을 순회한다.
+ * 2. 덱(deque)이 가리키는 위치와 현재 위치(index) 차가 k를 벗어나면 제거한다.
+ * 3. deque이 가리키는 위치의 값과 현재 값을 더하여 현재 위치의 최대 값을 기록하는 수열(maximums)에 기록한다.
+ * 단, deque이 가리키는 위치의 값이 음수라면 현재 값만 기록한다.
+ * 4. deque을 순회하며 maximums의 index가 가리키는 값이 deque에서 가리키는 마지막 위치의 값보다 크거나 같다면,
+ * 제거하여 deque이 가리키는 값이 항상 최상의 값을 가지도록 만든다.
+ * 5. deque에 현재 위치를 추가한다.
+ * 6. nums 마지막까지 순회하고 maximums 중에 가장 큰 값을 반환한다.
+ *
+ * 해당 풀이는 O(N)의 성능을 지닌다.
+ */
+class Solution {
+    fun constrainedSubsetSum(nums: IntArray, k: Int): Int {
+        val deque = ArrayDeque<Int>()
+        val maximums = IntArray(nums.size) { 0 }
+        maximums[0] = nums[0]
+
+        deque.add(0)
+
+        for (index in 1..nums.lastIndex) {
+            if (index - k > deque.first()) {
+                deque.removeFirst()
+            }
+
+            maximums[index] = nums[index] + (maximums[deque.first()].takeIf { it > 0 } ?: 0)
+
+            while (deque.isNotEmpty() && maximums[deque.last()] <= maximums[index]) {
+                deque.removeLast()
+            }
+
+            deque.addLast(index)
+        }
+
+        return maximums.max()!!
+    }
+}
+
+fun main() {
+    Solution().constrainedSubsetSum(nums = intArrayOf(10, 2, -10, 5, 20), k = 2)
+        .runTestcase(expected = 37)
+    Solution().constrainedSubsetSum(nums = intArrayOf(-1, -2, -3), k = 1)
+        .runTestcase(expected = -1)
+    Solution().constrainedSubsetSum(nums = intArrayOf(10, -2, -10, -5, 20), k = 2)
+        .runTestcase(expected = 23)
+    Solution().constrainedSubsetSum(nums = intArrayOf(-5266,4019,7336,-3681,-5767), k = 2)
+        .runTestcase(expected = 11355)
+}
